@@ -20,6 +20,7 @@ function sendPresenceNotification({
   conversation: any;
   conversationId?: string;
 }) {
+  const ntfyIgnoredNames = settings.getSetting('NTFY_IGNORED_NAMES');
   const {
     username,
     bitmoji_avatar_id: bitmojiAvatarId,
@@ -29,6 +30,15 @@ function sendPresenceNotification({
   const conversationTitle = conversation?.title ?? 'your Chat';
   const navigationPath = `/web/${conversationId}`;
   const action = PresenceActionMap[presenceState](conversationTitle);
+
+  const ignoredNames = typeof ntfyIgnoredNames === 'string' ? JSON.parse(ntfyIgnoredNames) : [];
+  if (
+    ignoredNames.includes(displayName) ||
+    ignoredNames.includes(username) ||
+    ignoredNames.includes(conversationTitle)
+  ) {
+    return;
+  }
 
   let iconUrl = undefined;
   if (bitmojiSelfieId != null && bitmojiAvatarId != null) {

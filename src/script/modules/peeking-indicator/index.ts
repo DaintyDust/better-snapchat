@@ -1,320 +1,254 @@
 import settings from '../../lib/settings';
 import Module from '../../lib/module';
-import { getSnapchatStore } from '../../utils/snapchat';
+import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
 import { logInfo } from '../../lib/debug';
+import { PresenceActionMap, PresenceState } from '../../lib/constants';
 import styles from './index.module.css';
 
 const store = getSnapchatStore();
-let unsubscribe: (() => void) | null = null;
-let refreshInterval: number | null = null;
 
-class PeekingIndicator extends Module {
-  constructor() {
-    super('Peeking Indicator');
-    settings.on('HALF_SWIPE_NOTIFICATION.setting:update', this.load.bind(this));
-    this.load();
+let oldOnActiveConversationInfoUpdated: any = null;
+let newOnActiveConversationInfoUpdated: any = null;
+
+function sendNtfyNotification({
+  user,
+  presenceState,
+  conversation,
+  conversationId,
+}: {
+  user: any;
+  presenceState: PresenceState;
+  conversation: any;
+  conversationId?: string;
+}) {
+  const ntfyEnabled = settings.getSetting('NTFY_ENABLED');
+  const ntfyTopic = settings.getSetting('NTFY_TOPIC');
+
+  // logInfo('user', user);
+  // logInfo('presence', presenceState);
+  // logInfo('conversation', conversation);
+  // logInfo('conversationId', conversationId);
+
+  const {
+    username,
+    bitmoji_avatar_id: bitmojiAvatarId,
+    bitmoji_selfie_id: bitmojiSelfieId,
+    display_name: displayName,
+  } = user;
+  const conversationTitle = conversation?.title ?? 'your Chat';
+
+  const navigationPath = `snapchat://feed?conversation_id=${conversationId}`; //`/web/${conversationId}`;
+  const action = PresenceActionMap[presenceState](conversationTitle);
+
+  let iconUrl = undefined;
+  if (bitmojiSelfieId != null && bitmojiAvatarId != null) {
+    iconUrl = `https://sdk.bitmoji.com/render/panel/${bitmojiSelfieId}-${bitmojiAvatarId}-v1.webp?transparent=1&trim=circle&scale=1`;
+  } else if (bitmojiAvatarId != null) {
+    iconUrl = `https://sdk.bitmoji.com/render/panel/${bitmojiAvatarId}-v1.webp?transparent=1&trim=circle&scale=1`;
   }
 
-  findSnapchatConversationContainers() {
-    const possibleContainers = [
-      ...document.querySelectorAll('.O4POs'),
-      ...document.querySelectorAll('[data-testid="conversation_item_container"]'),
-      ...document.querySelectorAll('[data-role="conversation_item"]'),
-      ...document.querySelectorAll('[role="listitem"]'),
-    ];
-    return possibleContainers;
+  if (ntfyEnabled && ntfyTopic) {
+    const requestId = Math.random().toString(36).substring(7);
+
+    window.postMessage(
+      {
+        type: 'BETTERSNAP_TO_BACKGROUND',
+        requestId,
+        payload: {
+          type: 'SEND_NTFY_NOTIFICATION',
+          data: {
+            topic: ntfyTopic,
+            title: displayName ?? username,
+            body: action,
+            iconUrl: iconUrl,
+            clickUrl: navigationPath,
+            priority: 5,
+          },
+        },
+      },
+      '*',
+    );
+  }
+}
+
+const userPresenceMap: Map<string, PresenceState> = new Map();
+const serializeUserConversationId = (userId: string, conversationId?: string) =>
+  `${userId}:${conversationId ?? 'direct'}`;
+
+function addPeekingIndicator(container: Element, conversation_id?: string) {
+  const O4POsElement = container.querySelector('.O4POs');
+  if (!O4POsElement) {
+    return;
   }
 
-  ensureConversationIndicators() {
-    const enabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
-    if (!enabled) return;
-
-    const containers = this.findSnapchatConversationContainers();
-    containers.forEach((container) => this.addPeekingIndicator(container));
+  container = O4POsElement;
+  if (container.querySelector(`.${styles.peeking}`)) {
+    return;
   }
 
-  addPeekingIndicator(container: Element) {
-    if (container.querySelector(`.${styles.peeking}`)) {
-      return;
+  const peekingDiv = document.createElement('div');
+  peekingDiv.id = `peeking-indicator-${conversation_id}`;
+  peekingDiv.className = styles.peeking;
+
+  const peekingItem = document.createElement('div');
+  peekingItem.id = `peeking-item-${conversation_id}`;
+  peekingItem.className = styles.peekingItem;
+
+  peekingDiv.appendChild(peekingItem);
+  container.prepend(peekingDiv);
+
+  if (window.getComputedStyle(container).display !== 'flex') {
+    (container as HTMLElement).style.display = 'flex';
+    (container as HTMLElement).style.flexDirection = 'row';
+    (container as HTMLElement).style.alignItems = 'center';
+  }
+}
+
+function removePeekingIndicator(conversationId: string) {
+  const container = getConversationContainerElementFromId(conversationId);
+  if (container) {
+    container.classList.remove('isPeeking');
+    const peekingDiv = document.getElementById(`peeking-indicator-${conversationId}`);
+    if (peekingDiv) {
+      peekingDiv.remove();
     }
-
-    const peekingDiv = document.createElement('div');
-    peekingDiv.className = styles.peeking;
-
-    const peekingItem = document.createElement('div');
-    peekingItem.className = styles.peekingItem;
-
-    peekingDiv.appendChild(peekingItem);
-    container.prepend(peekingDiv);
-    
-    if (window.getComputedStyle(container).display !== 'flex') {
-      (container as HTMLElement).style.display = 'flex';
-      (container as HTMLElement).style.flexDirection = 'row';
-      (container as HTMLElement).style.alignItems = 'center';
-    }
   }
+}
 
-  getConversationIdFromElement(container: Element): string | null {
-    try {
-      // @ts-ignore
-      const reactProps = container._reactProps || container.__reactProps;
-      if (reactProps) {
-        const convId =
-          reactProps.conversationId ||
-          reactProps['data-conversation-id'] ||
-          (reactProps.children && reactProps.children.props && reactProps.children.props.conversationId);
+function getConversationContainerElementFromId(conversationId: string) {
+  const element = document.getElementById(`title-${conversationId}`);
+  return element?.closest('div[role="listitem"]');
+}
 
-        if (convId) return String(convId);
+function onUserStartedPeeking(user: any, conversationId: string, conversation: any) {
+  const container = getConversationContainerElementFromId(conversationId ?? '');
+  if (container) {
+    addPeekingIndicator(container, conversationId);
+    container.classList.add('isPeeking');
+  }
+}
+
+function onUserStoppedPeeking(userId: string, conversationId: string) {
+  removePeekingIndicator(conversationId);
+}
+
+async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any) {
+  const halfSwipeNotificationEnabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
+  const ntfyEnabled = settings.getSetting('NTFY_ENABLED');
+  const peekingIndicatorEnabled = settings.getSetting('PEEKING_INDICATOR');
+  const ntfyIgnoredNames = settings.getSetting('NTFY_IGNORED_NAMES');
+  const enabled = halfSwipeNotificationEnabled || ntfyEnabled;
+
+  const currentlyPeekingUsers = new Set<string>();
+
+  for (const [conversationId, { peekingParticipants }] of activeConversationInfo.entries()) {
+    const conversation = getConversation(conversationId)?.conversation;
+
+    for (const userId of peekingParticipants) {
+      const user = await getSnapchatPublicUser(userId);
+
+      const serializedId = serializeUserConversationId(userId, conversationId);
+      const previousState = userPresenceMap.get(serializedId);
+
+      currentlyPeekingUsers.add(serializedId);
+
+      if (previousState === PresenceState.PEEKING) {
+        continue;
       }
 
-      const dataConvId = container.getAttribute('data-conversation-id');
-      if (dataConvId) return dataConvId;
-
-      const innerElement = container.querySelector('[data-conversation-id]');
-      if (innerElement) return innerElement.getAttribute('data-conversation-id');
-
-      const ariaLabelledBy = container.querySelector('[aria-labelledby]')?.getAttribute('aria-labelledby');
-      if (ariaLabelledBy) {
-        const match = ariaLabelledBy.match(/title-([0-9a-f-]+)/);
-        if (match && match[1]) {
-          return match[1];
-        }
-      }
-
-      const titleSpan = container.querySelector('span[id^="title-"]');
-      if (titleSpan) {
-        const titleId = titleSpan.id;
-        const match = titleId.match(/title-([0-9a-f-]+)/);
-        if (match && match[1]) {
-          return match[1];
-        }
-      }
-
-      const statusSpan = container.querySelector('span[id^="status-"]');
-      if (statusSpan) {
-        const statusId = statusSpan.id;
-        const match = statusId.match(/status-([0-9a-f-]+)/);
-        if (match && match[1]) {
-          return match[1];
-        }
-      }
-
-      const anchor = container.querySelector('a[href*="/web/"]');
-      if (anchor) {
-        const href = anchor.getAttribute('href');
-        if (href) {
-          const match = href.match(/\/web\/([^/]+)/);
-          if (match && match[1]) return match[1];
-        }
-      }
-
-      const projectionElement = container.querySelector('[data-projection-id]');
-      if (projectionElement) {
-        const projectionId = projectionElement.getAttribute('data-projection-id');
-        if (projectionId) {
-          return `projection-${projectionId}`;
-        }
-      }
-
-      for (const attr of Array.from(container.attributes)) {
+      if (enabled) {
+        const { username, display_name: displayName } = user;
+        const conversationTitle = conversation?.title ?? 'your Chat';
+        const ignoredNames = typeof ntfyIgnoredNames === 'string' ? JSON.parse(ntfyIgnoredNames) : [];
         if (
-          attr.name.startsWith('data-') &&
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(attr.value)
+          ignoredNames.includes(displayName) ||
+          ignoredNames.includes(username) ||
+          ignoredNames.includes(conversationTitle)
         ) {
-          return attr.value;
+          return;
         }
-      }
-
-      return null;
-    } catch (error) {
-      logInfo('Error getting conversation ID:', error);
-      return null;
-    }
-  }
-
-  updatePeekingState() {
-    const enabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
-    if (!enabled) return;
-
-    const storeState = store.getState();
-    const presence = storeState?.presence;
-    if (!presence || !presence.activeConversationInfo) {
-      return;
-    }
-
-    try {
-      this.ensureConversationIndicators();
-      const peekingConversations = new Map<string, any>();
-
-      if (typeof presence.activeConversationInfo.entries === 'function') {
-        const entries = Array.from(presence.activeConversationInfo.entries());
-
-        entries.forEach((entry: any) => {
-          if (!Array.isArray(entry) || entry.length !== 2) {
-            return;
-          }
-
-          let conversationId;
-          try {
-            if (typeof entry[0] === 'object' && entry[0] !== null) {
-              if (entry[0].str && typeof entry[0].str === 'string') {
-                conversationId = entry[0].str;
-              } else if (entry[0].id && typeof entry[0].id === 'object') {
-                conversationId = String(entry[0].id);
-              } else {
-                conversationId = JSON.stringify(entry[0]);
-              }
-            } else {
-              conversationId = String(entry[0]);
-            }
-          } catch (e) {
-            conversationId = `ID-${Math.random().toString(36).substring(2, 8)}`;
-            logInfo('Error converting conversation ID to string:', e);
-          }
-
-          const info = entry[1];
-          if (!info) return;
-          
-          const peekingParticipants = info.peekingParticipants;
-          const hasPeeking = peekingParticipants && Array.isArray(peekingParticipants) && peekingParticipants.length > 0;
-          
-          if (hasPeeking) {
-            peekingConversations.set(conversationId, info);
-          }
+        if (peekingIndicatorEnabled) {
+          onUserStartedPeeking(user, conversationId, conversation);
+        }
+        sendNtfyNotification({
+          user,
+          conversation,
+          conversationId,
+          presenceState: PresenceState.PEEKING,
         });
       }
 
-      const containers = this.findSnapchatConversationContainers();
-      containers.forEach((container) => {
-        container.classList.remove(styles.isPeeking);
-      });
-
-      const containerMap = new Map<string, Element>();
-      const containersByTitle = new Map<string, Element>();
-
-      containers.forEach((container) => {
-        const id = this.getConversationIdFromElement(container);
-        const titleElement = container.querySelector('span[id^="title-"]');
-        const titleText = titleElement?.textContent?.trim() || '';
-
-        if (id) {
-          containerMap.set(id, container);
-        }
-
-        if (titleText) {
-          containersByTitle.set(titleText, container);
-        }
-      });
-
-      let foundMatch = false;
-      peekingConversations.forEach((info, conversationId) => {
-        if (containerMap.has(conversationId)) {
-          const container = containerMap.get(conversationId)!;
-          container.classList.add(styles.isPeeking);
-          foundMatch = true;
-          return;
-        }
-
-        const conversationName = info.displayName || info.name;
-        if (conversationName) {
-          for (const [title, container] of containersByTitle.entries()) {
-            if (title.includes(conversationName) || conversationName.includes(title)) {
-              container.classList.add(styles.isPeeking);
-              foundMatch = true;
-              break;
-            }
-          }
-        }
-
-        const participants = info.participants || [];
-        if (participants.length > 0 && !foundMatch) {
-          participants.forEach((participant: any) => {
-            const participantName = participant.displayName || participant.username || participant.userId;
-            if (!participantName) return;
-
-            for (const [title, container] of containersByTitle.entries()) {
-              if (title.includes(participantName)) {
-                container.classList.add(styles.isPeeking);
-                foundMatch = true;
-                break;
-              }
-            }
-          });
-        }
-      });
-
-      if (!foundMatch && peekingConversations.size > 0 && containers.length > 0) {
-        let applied = false;
-        for (const container of containers) {
-          const titleElement = container.querySelector('span[id^="title-"]');
-          if (titleElement) {
-            container.classList.add(styles.isPeeking);
-            applied = true;
-            break;
-          }
-        }
-
-        if (!applied && containers.length > 0) {
-          const firstContainer = containers[0];
-          if (firstContainer) {
-            firstContainer.classList.add(styles.isPeeking);
-          }
-        }
-      }
-    } catch (error) {
-      logInfo('Error updating peeking state:', error);
+      userPresenceMap.set(serializedId, PresenceState.PEEKING);
     }
   }
 
-  load() {
-    const enabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
+  // Check user stop peeking
+  for (const [serializedId, state] of userPresenceMap.entries()) {
+    if (state === PresenceState.PEEKING && !currentlyPeekingUsers.has(serializedId)) {
+      const parts = serializedId.split(':');
+      if (parts[0] && parts[1]) {
+        onUserStoppedPeeking(parts[0], parts[1]);
+      }
+      userPresenceMap.delete(serializedId);
+    }
+  }
+}
 
-    if (!enabled && unsubscribe != null) {
-      unsubscribe();
-      unsubscribe = null;
-      this.cleanup();
+class PeekingIndicator extends Module {
+  private isLoading = false;
+
+  constructor() {
+    super('Peeking Indicator');
+    store.subscribe((storeState: any) => storeState.presence, this.load.bind(this));
+    settings.on('HALF_SWIPE_NOTIFICATION.setting:update', () => this.load());
+    settings.on('NTFY_ENABLED.setting:update', () => this.load());
+  }
+
+  load(presenceClient?: any) {
+    if (this.isLoading) {
       return;
     }
 
-    if (enabled && unsubscribe == null) {
-      unsubscribe = store.subscribe(
-        (storeState: any) => storeState.presence,
-        this.updatePeekingState.bind(this)
-      );
-      
-      if (refreshInterval === null) {
-        refreshInterval = window.setInterval(() => {
-          if (settings.getSetting('HALF_SWIPE_NOTIFICATION')) {
-            this.ensureConversationIndicators();
-          } else {
-            this.cleanup();
-          }
-        }, 2000);
+    this.isLoading = true;
+
+    try {
+      presenceClient = presenceClient ?? store.getState().presence;
+      if (presenceClient == null) {
+        return;
       }
 
-      this.updatePeekingState();
-    }
-  }
+      const halfSwipeNotificationEnabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
+      const ntfyEnabled = settings.getSetting('NTFY_ENABLED');
+      const enabled = halfSwipeNotificationEnabled || ntfyEnabled;
+      const changedValues: any = {};
 
-  cleanup() {
-    if (unsubscribe != null) {
-      unsubscribe();
-      unsubscribe = null;
-    }
+      if (enabled && presenceClient.onActiveConversationInfoUpdated !== newOnActiveConversationInfoUpdated) {
+        oldOnActiveConversationInfoUpdated = presenceClient.onActiveConversationInfoUpdated;
 
-    if (refreshInterval !== null) {
-      window.clearInterval(refreshInterval);
-      refreshInterval = null;
-    }
+        newOnActiveConversationInfoUpdated = new Proxy(oldOnActiveConversationInfoUpdated, {
+          apply(targetFunc: any, thisArg: any, [activeConversationPayload, ...rest]: any) {
+            handleOnActiveConversationInfoUpdated(activeConversationPayload);
+            return Reflect.apply(targetFunc, thisArg, [activeConversationPayload, ...rest]);
+          },
+        });
 
-    const containers = this.findSnapchatConversationContainers();
-    containers.forEach((container) => {
-      container.classList.remove(styles.isPeeking);
-      const indicator = container.querySelector(`.${styles.peeking}`);
-      if (indicator) {
-        indicator.remove();
+        changedValues.onActiveConversationInfoUpdated = newOnActiveConversationInfoUpdated;
       }
-    });
+
+      if (!enabled && oldOnActiveConversationInfoUpdated != null) {
+        changedValues.onActiveConversationInfoUpdated = oldOnActiveConversationInfoUpdated;
+        oldOnActiveConversationInfoUpdated = null;
+        userPresenceMap.clear();
+      }
+
+      if (Object.keys(changedValues).length === 0) {
+        return;
+      }
+
+      store.setState({ presence: { ...presenceClient, ...changedValues } });
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
 

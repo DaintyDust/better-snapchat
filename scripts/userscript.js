@@ -16,6 +16,7 @@ const USER_SCRIPT_METADATA = (scriptTextContent, styleTextContent) => `
 // @run-at       document-start
 // @grant        GM_addElement
 // @connect      better-snapchat.vasp.dev
+// @connect      ntfy.sh
 // @license      MIT
 // @namespace    https://better-snapchat.vasp.dev
 // ==/UserScript==

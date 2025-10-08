@@ -15,17 +15,45 @@ const manifest = {
   name: package.name,
   description: package.description,
   version: package.version,
-  icons: { 32: 'logo32.png', 48: 'logo48.png', 96: 'logo96.png', 128: 'logo128.png' },
-  host_permissions: ['https://*.snapchat.com/*'],
-  background: { service_worker: './build/hot-reload.js' },
-  permissions: ['webNavigation', 'scripting', 'tabs', 'activeTab'],
-  web_accessible_resources: [{ resources: ['./build/*'], matches: ['https://*.snapchat.com/*'] }],
+  icons: {
+    32: 'logo32.png',
+    48: 'logo48.png',
+    96: 'logo96.png',
+    128: 'logo128.png',
+  },
+  host_permissions: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*', 'https://ntfy.sh/*'],
+  background: {
+    service_worker: './build/hot-reload.js'
+  },
+  content_scripts: [
+    {
+      matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+      js: ['./build/messenger.js'],
+      run_at: 'document_start',
+      world: 'ISOLATED'
+    }
+  ],
+  permissions: [
+    'webNavigation',
+    'scripting',
+    'tabs',
+    'activeTab'
+  ],
+  web_accessible_resources: [
+    {
+      resources: ['./build/*'],
+      matches: ['https://*.snapchat.com/*']
+    }
+  ],
+  content_security_policy: {
+    extension_pages: "script-src 'self'; object-src 'self'; connect-src https://ntfy.sh ws://localhost:* 'self';"
+  },
 };
 
 async function buildExtension() {
   await Promise.all([
     ESBuild.build({
-      entryPoints: ['./src/script', './src/hot-reload'],
+      entryPoints: ['./src/script', './src/hot-reload', './src/messenger'],
       bundle: true,
       minify: false,
       sourcemap: true,

@@ -1,6 +1,6 @@
 {
   "name": "BetterSnap - Make Snapchat Web Better",
-  "version": "1.4.2",
+  "version": "1.5.1",
   "description": "Screenshot Freely, Save Media, Bypass Presence Detection and more! Previously known as Better Snapchat.",
   "scripts": {
     "start": "rm -rf ./public/build/ && node ./scripts/dev.js",
@@ -12,8 +12,8 @@
     "build:firefox": "rm -rf ./public/build/ && node ./scripts/firefox.js",
     "build:userscript": "rm -rf ./public/build/ && node ./scripts/userscript.js",
     "package": "npm run package:chrome",
-    "package:chrome": "rm -rf ./public/build/ && npm run build:chrome && cd ./public && zip -D -r ../better-snapchat-chrome.zip . && cd ..",
-    "package:firefox": "rm -rf ./public/build/ && npm run build:firefox && cd ./public && zip -D -r ../better-snapchat-firefox.zip . && cd .."
+    "package:chrome": "rm -rf ./public/build/ && npm run build:chrome && cross-zip ./public better-snapchat-chrome-v%npm_package_version%.zip",
+    "package:firefox": "rm -rf ./public/build/ && npm run build:firefox && cross-zip ./public better-snapchat-firefox-v%npm_package_version%.zip"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "@mantine/core": "7.17.3",
     "@mantine/hooks": "^7.6.2",
     "@tabler/icons-react": "^3.19.0",
+    "clsx": "^2.1.1",
     "cookies-js": "^1.2.3",
     "eventemitter3": "^5.0.1",
     "fast-deep-equal": "^3.1.3",
@@ -49,8 +50,9 @@
     "@types/ua-parser-js": "^0.7.39",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
-    "addons-linter": "^7.9.0",
+    "addons-linter": "^8.1.0",
     "chokidar": "^4.0.3",
+    "cross-zip-cli": "^1.0.0",
     "dotenv": "^16.5.0",
     "esbuild": "^0.25.3",
     "esbuild-css-modules-plugin": "^3.1.2",

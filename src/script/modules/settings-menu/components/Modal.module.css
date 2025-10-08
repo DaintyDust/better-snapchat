@@ -47,6 +47,7 @@
   border-width: 1px;
   border: solid;
   border-color: var(--mantine-color-gray-light);
+  overflow: hidden;
 }
 
 .logo {
@@ -64,4 +65,7 @@
 .resetButton {
   margin: 0;
   text-align: left;
+  width: fit-content;
+  align-self: flex-end;
+  margin-right: 20px;
 }

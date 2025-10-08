@@ -1,4 +1,7 @@
+import { getSnapchatStore } from '../utils/snapchat';
 export const SettingIds = {
+  USER_ID: 'USER_ID',
+  USER_INFO: 'USER_INFO',
   BITMOJI_PRESENCE: 'BITMOJI_PRESENCE',
   ALLOW_SCREENSHOT: 'ALLOW_SCREENSHOT',
   SAVE_IMAGE: 'SAVE_IMAGE',
@@ -9,6 +12,11 @@ export const SettingIds = {
   UPLOAD_SNAPS: 'UPLOAD_SNAPS',
   PREVENT_TYPING_NOTIFICATION: 'PREVENT_TYPING_NOTIFICATION',
   PREVENT_TYPING: 'PREVENT_TYPING',
+  NTFY_ENABLED: 'NTFY_ENABLED',
+  NTFY_TOPIC: 'NTFY_TOPIC',
+  NTFY_IGNORED_NAMES: 'NTFY_IGNORED_NAMES',
+  STORED_CONVERSATIONS_NAMES: 'STORED_CONVERSATIONS_NAMES',
+  PEEKING_INDICATOR: 'PEEKING_INDICATOR',
   /**
    * @deprecated Use {@link SettingIds.BITMOJI_PRESENCE} instead.
    */
@@ -48,6 +56,8 @@ export enum ChatHandling {
 }
 
 export const defaultSettingValues = {
+  [SettingIds.USER_ID]: '',
+  [SettingIds.USER_INFO]: {},
   [SettingIds.ALLOW_SCREENSHOT]: true,
   [SettingIds.SAVE_IMAGE]: true,
   [SettingIds.ALWAYS_PRESENT]: true,
@@ -57,6 +67,15 @@ export const defaultSettingValues = {
   [SettingIds.UPLOAD_SNAPS]: false,
   [SettingIds.PREVENT_TYPING_NOTIFICATION]: false,
   [SettingIds.PREVENT_TYPING]: false,
+  [SettingIds.NTFY_ENABLED]: false,
+  [SettingIds.NTFY_TOPIC]: '',
+  [SettingIds.NTFY_IGNORED_NAMES]: '[]',
+  [SettingIds.STORED_CONVERSATIONS_NAMES]: JSON.stringify({
+    groupChatTitles: [],
+    users: [],
+    totalChats: 0,
+  }),
+  [SettingIds.PEEKING_INDICATOR]: false,
   [SettingIds.HIDE_BITMOJI]: false,
   [SettingIds.MOBILE_BITMOJI]: false,
   [SettingIds.AUTO_SAVE_CHATS]: false,

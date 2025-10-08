@@ -9,11 +9,11 @@ const alias = require('esbuild-plugin-alias');
   console.log('Building: Firefox Extension');
 
   await ESBuild.build({
-    entryPoints: ['./src/script', './src/inject'],
+    entryPoints: ['./src/script', './src/background', './src/messenger'],
     bundle: true,
     minify: true,
     sourcemap: false,
-    target: ['firefox58'],
+    target: ['firefox91'], // Firefox 91+ supports manifest v3 and world: 'MAIN'
     outbase: './src/',
     outdir: './public/build/',
     logLevel: 'info',
@@ -29,7 +29,7 @@ const alias = require('esbuild-plugin-alias');
   });
 
   const manifest = {
-    manifest_version: 2,
+    manifest_version: 3,
     name: package.name,
     description: package.description,
     version: package.version,
@@ -39,16 +39,23 @@ const alias = require('esbuild-plugin-alias');
       96: 'logo96.png',
       128: 'logo128.png',
     },
+    background: {
+      scripts: ['./build/background.js'], // Firefox uses 'scripts' instead of 'service_worker'
+    },
     content_scripts: [
       {
         matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+        js: ['./build/script.js'],
         css: ['./build/script.css'],
-        js: ['./build/inject.js'],
         run_at: 'document_start',
-        all_frames: true,
+      },
+      {
+        matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+        js: ['./build/messenger.js'],
+        run_at: 'document_start',
       },
     ],
-    permissions: ['webNavigation', 'https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+    permissions: ['webNavigation', 'https://web.snapchat.com/*', 'https://*.snapchat.com/*', 'https://ntfy.sh/*'],
   };
 
   await fs.writeFile('./public/manifest.json', JSON.stringify(manifest, null, 2));

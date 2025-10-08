@@ -97,7 +97,7 @@ body {
   --mantine-color-white: #fff;
   --mantine-color-black: #000;
   --mantine-line-height: 1.55;
-  --mantine-font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif,
+  --mantine-font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, var(--sigFontFamilyEmojis),
     Apple Color Emoji, Segoe UI Emoji;
   --mantine-font-family-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New,
     monospace;

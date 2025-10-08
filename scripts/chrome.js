@@ -9,7 +9,7 @@ const alias = require('esbuild-plugin-alias');
   console.log('Building: Chrome Extension');
 
   await ESBuild.build({
-    entryPoints: ['./src/script'],
+    entryPoints: ['./src/script', './src/background', './src/messenger'],
     bundle: true,
     minify: true,
     sourcemap: false,
@@ -39,6 +39,9 @@ const alias = require('esbuild-plugin-alias');
       96: 'logo96.png',
       128: 'logo128.png',
     },
+    background: {
+      service_worker: './build/background.js',
+    },
     content_scripts: [
       {
         matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
@@ -47,8 +50,14 @@ const alias = require('esbuild-plugin-alias');
         run_at: 'document_start',
         world: 'MAIN',
       },
+      {
+        matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+        js: ['./build/messenger.js'],
+        run_at: 'document_start',
+        world: 'ISOLATED',
+      },
     ],
-    host_permissions: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+    host_permissions: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*', 'https://ntfy.sh/*'],
   };
 
   await fs.writeFile('./public/manifest.json', JSON.stringify(manifest, null, 2));

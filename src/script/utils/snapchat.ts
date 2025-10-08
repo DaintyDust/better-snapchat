@@ -1,3 +1,5 @@
+import { logInfo } from '../lib/debug';
+
 type WebpackRequire = <T>(id: string) => T;
 
 let snapchatWebpackRequire: WebpackRequire | null = null;
@@ -5,6 +7,10 @@ let snapchatWebpackRequire: WebpackRequire | null = null;
 export function getSnapchatWebpackRequire(): WebpackRequire | null {
   if (snapchatWebpackRequire != null) {
     return snapchatWebpackRequire;
+  }
+
+  if (!window.webpackChunk_snapchat_web_calling_app) {
+    return null;
   }
 
   window.webpackChunk_snapchat_web_calling_app.push([
@@ -136,4 +142,51 @@ export function getConversation(conversationId: string) {
   }
 
   return conversations[conversationId];
+}
+
+export function getAllConversations() {
+  const { conversations } = getSnapchatStore().getState().messaging;
+  if (conversations == null) {
+    return null;
+  }
+
+  return conversations;
+}
+
+export function getFeed() {
+  const { feed } = getSnapchatStore().getState().messaging;
+  if (feed == null) {
+    return null;
+  }
+
+  return feed;
+}
+
+export function getFriends() {
+  const { mutuallyConfirmedFriendIds } = getSnapchatStore().getState().user;
+  if (mutuallyConfirmedFriendIds == null) {
+    return null;
+  }
+
+  return mutuallyConfirmedFriendIds;
+}
+
+export async function getMultipleSnapchatPublicUsers(userIds: Array<string>, retry = true) {
+  const { fetchPublicInfo, publicUsers } = getSnapchatStore().getState().user;
+  if (fetchPublicInfo == null || publicUsers == null) {
+    return null;
+  }
+
+  const users = userIds.map((userId) => {
+    const user = publicUsers.entries().find(([{ str }]: [{ str: string }]) => str === userId);
+    return user != null ? user[1] : null;
+  });
+
+  if (users.includes(null) && retry) {
+    const serializedIds = userIds.map(getSerializedSnapchatId);
+    await fetchPublicInfo(serializedIds);
+    return getMultipleSnapchatPublicUsers(userIds, true);
+  }
+
+  return users;
 }

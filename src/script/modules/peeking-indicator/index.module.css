@@ -33,23 +33,23 @@
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.7));
 }
 
-.isPeeking .peeking {
+:global(.isPeeking) .peeking {
     display: flex !important;
     flex-direction: row;
     align-items: center;
     justify-content: center;
 }
 
-.isPeeking .peekingItem {
+:global(.isPeeking) .peekingItem {
     transform: translateX(0);
     display: flex !important;
 }
 
-.isPeeking {
+:global(.isPeeking) {
     position: relative;
 }
 
-.isPeeking::before {
+:global(.isPeeking)::before {
     content: "";
     position: absolute;
     inset: 0;
