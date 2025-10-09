@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dclstn/better-snapchat.git"
+    "url": "git+https://github.com/daintydust/better-snapchat.git"
   },
   "author": "donnieacolston@gmail.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dclstn/better-snapchat/issues"
+    "url": "https://github.com/daintydust/better-snapchat/issues"
   },
-  "homepage": "https://github.com/dclstn/better-snapchat#readme",
+  "homepage": "https://github.com/daintydust/better-snapchat#readme",
   "dependencies": {
     "@mantine/core": "7.17.3",
     "@mantine/hooks": "^7.6.2",
