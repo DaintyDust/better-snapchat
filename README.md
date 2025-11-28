@@ -3,7 +3,7 @@
 ## BetterSnap
 
 <!--![Node CI badge](https://github.com/daintydust/better-snapchat/actions/workflows/node.js.yml/badge.svg)-->
-[![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/hpmjAJZR3H?style=flat)](https://discord.gg/hpmjAJZR3H)
+[![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/Sq4DEhPcZh?style=flat)](https://discord.gg/Sq4DEhPcZh)
 
 Screenshot Freely, Save Media, Bypass Presence Detection and more! Previously known as Better Snapchat.
 
@@ -55,4 +55,4 @@ You can install **BetterSnap** via the [User-Script](https://better-snapchat.vas
 
 <!-- [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/daintydust) -->
 
-Need support? Join our [Discord](https://discord.gg/hpmjAJZR3H).
+Need support? Join our [Discord](https://discord.gg/Sq4DEhPcZh).
