@@ -1,105 +1,134 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import {
-  getAllConversations,
-  getSnapchatPublicUser,
-  getFriends,
-  getMultipleSnapchatPublicUsers,
-  getSnapchatStore,
-} from '../../utils/snapchat';
-import { logInfo, logError } from '../../lib/debug';
+import { Module } from "../../class/Module";
+import { Settings } from "../../class/Settings";
+import { getConversations, getPublicUser } from "../../utils/store";
+import { GlobalState } from "../../class/GlobalState";
+import { Logger } from "../../utils/logger";
 
-function initializeUserInfo() {
-  try {
-    const store = getSnapchatStore();
-    if (!store) {
-      setTimeout(() => initializeUserInfo(), 1000);
-      return;
-    }
-
-    const state = store.getState();
-    if (!state?.auth?.userId) {
-      setTimeout(() => initializeUserInfo(), 1000);
-      return;
-    }
-
-    const userId = state.auth.userId;
-    const userInfo = state.auth.me;
-
-    if (userId) {
-      settings.setSetting('USER_ID', userId);
-    }
-
-    if (userInfo) {
-      settings.setSetting('USER_INFO', userInfo);
-    }
-  } catch (error) {
-    logError('UserInfo: Error initializing, retrying...', error);
-    setTimeout(() => initializeUserInfo(), 1000);
-  }
-}
-
-async function setTagsInputData() {
-  const GROUP_CHATS: Record<string, { conversation: { title: string } }> = getAllConversations();
-  const groupChatTitles = Object.entries(GROUP_CHATS).reduce(
-    (acc, [conversationId, chat]) => {
-      if (chat.conversation.title) {
-        const title = chat.conversation.title;
-        acc[conversationId] = typeof title === 'string' ? title : (title as any)?.title || String(title);
-      }
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
-  const FRIENDS = getFriends();
-  const selfUserId = settings.getSetting('USER_ID');
-  const excludedUsernames = ['myai', 'snapchatai', 'teamsnapchat'];
-  const users = [];
-  for (const friend of FRIENDS) {
-    const userId = friend.str;
-    if (userId === selfUserId) continue;
-
-    const user = await getSnapchatPublicUser(userId);
-    const username = (user.mutable_username || user.username).toLowerCase();
-
-    if (excludedUsernames.includes(username)) continue;
-
-    users.push(user);
-  }
-  const totalChats = Object.keys(FRIENDS).length + Object.keys(GROUP_CHATS).length;
-
-  const existingSetting = settings.getSetting('STORED_CONVERSATIONS_NAMES');
-  const existingData = existingSetting ? JSON.parse(existingSetting) : null;
-
-  const newData = {
-    groupChatTitles: groupChatTitles,
-    users: users,
-    totalChats: totalChats,
-  };
-
-  if (existingData && existingData.totalChats > 0) {
-    const existingTotal = existingData.totalChats;
-    const hasSignificantChange = Math.abs(newData.totalChats - existingTotal) < existingTotal * 0.5;
-
-    if (!hasSignificantChange || newData.totalChats < existingTotal * 0.5) {
-      return;
-    }
-  }
-
-  settings.setSetting('STORED_CONVERSATIONS_NAMES', JSON.stringify(newData));
-}
-
-class StoreConversation extends Module {
+class ConversationStorage extends Module {
   constructor() {
-    super('Conversation Storage');
-    settings.on('NTFY_ENABLED.setting:update', () => this.load());
+    super("Conversation Storage");
+    
+    // Re-run storage when these settings change
+    Settings.on("NTFY_ENABLED.setting:update", () => this.load());
+    
+    // Initial delay to ensure Snapchat loads first
     setTimeout(() => this.load(), 5000);
-    initializeUserInfo();
+    
+    // Initialize user info scraping
+    this.initializeUserInfo();
   }
 
   load() {
-    setTagsInputData();
+    this.setTagsInputData();
+  }
+
+  initializeUserInfo() {
+    try {
+      const state = GlobalState.getState();
+      if (!state) {
+        setTimeout(() => this.initializeUserInfo(), 1000);
+        return;
+      }
+
+      const { auth } = state;
+      if (!auth?.userId) {
+        setTimeout(() => this.initializeUserInfo(), 1000);
+        return;
+      }
+
+      const userId = auth.userId;
+      const me = auth.me;
+
+      if (userId) Settings.setSetting("USER_ID", userId);
+      if (me) Settings.setSetting("USER_INFO", me);
+
+    } catch (error) {
+      // Fail silently to avoid console detection
+      // Logger.error("UserInfo: Error initializing", error);
+      setTimeout(() => this.initializeUserInfo(), 1000);
+    }
+  }
+
+  async setTagsInputData() {
+    try {
+      const conversations = getConversations();
+      if (!conversations) return;
+
+      // 1. Process Conversations (Fixing Duplicate Names)
+      const seenTitles = new Map<string, number>();
+      
+      const groupChatTitles = Object.entries(conversations).reduce((acc, [id, data]) => {
+        const conversation = data.conversation;
+        
+        if (conversation && conversation.title) {
+          // Normalize title safely
+          let title = typeof conversation.title === 'string' 
+            ? conversation.title 
+            : (conversation.title?.title || String(conversation.title));
+
+          // BUG FIX: Deduplication Logic
+          // If title exists, increment count and append ID segment
+          if (seenTitles.has(title)) {
+            const count = seenTitles.get(title)! + 1;
+            seenTitles.set(title, count);
+            
+            // Create unique name: "Group Name (a1b2)"
+            const uniqueSuffix = id.substring(0, 4);
+            acc[id] = `${title} (${uniqueSuffix})`; 
+          } else {
+            seenTitles.set(title, 1);
+            acc[id] = title;
+          }
+        }
+        return acc;
+      }, {} as Record<string, string>);
+
+      // 2. Process Friends/Users
+      const friends = GlobalState.getState()?.user?.mutuallyConfirmedFriendIds || [];
+      const currentUserId = Settings.getSetting("USER_ID");
+      const ignoredUsernames = ["myai", "snapchatai", "teamsnapchat"];
+      
+      const usersList: any[] = [];
+
+      for (const friend of friends) {
+        const userId = friend.str;
+        if (userId === currentUserId) continue;
+
+        const userProfile = await getPublicUser(userId);
+        if (userProfile) {
+          const username = (userProfile.mutable_username || userProfile.username || "").toLowerCase();
+          if (!ignoredUsernames.includes(username)) {
+            usersList.push(userProfile);
+          }
+        }
+      }
+
+      // 3. Validation and Saving
+      const totalChats = Object.keys(friends).length + Object.keys(conversations).length;
+      
+      // Optimization: Only save if data has changed significantly to reduce disk writes
+      const storedData = Settings.getSetting("STORED_CONVERSATIONS_NAMES");
+      const parsedData = storedData ? JSON.parse(storedData) : null;
+
+      if (parsedData && parsedData.totalChats > 0) {
+        const prevTotal = parsedData.totalChats;
+        // If chat count hasn't changed by much, skip saving to avoid detection vectors
+        if (Math.abs(totalChats - prevTotal) < prevTotal * 0.5 || totalChats < prevTotal * 0.5) {
+          return;
+        }
+      }
+
+      Settings.setSetting("STORED_CONVERSATIONS_NAMES", JSON.stringify({
+        groupChatTitles,
+        users: usersList,
+        totalChats
+      }));
+
+    } catch (error) {
+      // Critical: Catch all errors to prevent the "Uncaught Error" banner in console
+      console.debug("BS-Storage: Update suppressed.");
+    }
   }
 }
 
-export default new StoreConversation();
+export default new ConversationStorage();
