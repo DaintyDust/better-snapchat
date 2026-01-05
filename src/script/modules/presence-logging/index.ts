@@ -88,13 +88,13 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
       const serializedId = serializeUserConversationId(userId, conversationId);
       const previousState = userPresenceMap.get(serializedId);
 
+      if (previousState === PresenceState.PEEKING) {
+        continue;
+      }
+
       if (presenceLoggingEnabled) {
         const action = PresenceActionMap[PresenceState.PEEKING](conversationTitle);
         logInfo(`${user.display_name ?? user.username}:`, action);
-      }
-
-      if (previousState === PresenceState.PEEKING) {
-        continue;
       }
 
       if (halfSwipeNotificationEnabled) {
@@ -116,13 +116,13 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
       const serializedId = serializeUserConversationId(userId, conversationId);
       const previousState = userPresenceMap.get(serializedId);
 
+      if (previousState === presenceState) {
+        continue;
+      }
+
       if (presenceLoggingEnabled) {
         const action = PresenceActionMap[presenceState](conversationTitle);
         logInfo(`${user.display_name ?? user.username}:`, action);
-      }
-
-      if (previousState === presenceState) {
-        continue;
       }
 
       userPresenceMap.set(serializedId, presenceState);
