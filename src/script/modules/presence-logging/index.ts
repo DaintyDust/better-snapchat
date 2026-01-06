@@ -70,6 +70,10 @@ function sendPresenceNotification({
 }): Notification | null {
   const conversationTitle = conversation?.title ?? 'your Chat';
 
+  if (!isPresenceTypeEnabled(presenceState)) {
+    return null;
+  }
+
   if (shouldIgnoreUser(user, conversationTitle)) {
     return null;
   }
