@@ -1,0 +1,92 @@
+.nameWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.presenceDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #00c853;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7);
+  display: inline-block;
+  vertical-align: 0.1em;
+  margin-left: 8px;
+  opacity: 0;
+  transform: scale(0);
+  animation:
+    appear 0.3s ease-out forwards,
+    pulse 2s ease-in-out infinite 0.3s;
+}
+
+.presenceDot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(0, 200, 83, 0.4);
+  animation: ripple 2s ease-in-out infinite 0.3s;
+}
+
+.fadeOut {
+  animation: disappear 0.3s ease-in forwards;
+}
+
+.fadeOut::before {
+  animation: none;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(0);
+  }
+  50% {
+    transform: scale(1.2) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes disappear {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1) translateY(0);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}

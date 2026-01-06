@@ -43,6 +43,7 @@ export const SettingIds = {
   PRESENCE_LOGGING: 'PRESENCE_LOGGING',
   PRESENCE_LOGGING_TYPES: 'PRESENCE_LOGGING_TYPES',
   PRESENCE_LOGGING_SHOW_TIMESTAMP: 'PRESENCE_LOGGING_SHOW_TIMESTAMP',
+  PRESENCE_INDICATOR: 'PRESENCE_INDICATOR',
 } as const;
 
 export enum BitmojiPresence {
@@ -93,6 +94,7 @@ export const defaultSettingValues = {
   [SettingIds.PRESENCE_LOGGING]: false,
   [SettingIds.PRESENCE_LOGGING_TYPES]: JSON.stringify(['TYPING', 'IDLE', 'PEEKING', 'JOINED', 'LEFT']),
   [SettingIds.PRESENCE_LOGGING_SHOW_TIMESTAMP]: true,
+  [SettingIds.PRESENCE_INDICATOR]: true,
 };
 
 export type SettingId = keyof typeof SettingIds;
