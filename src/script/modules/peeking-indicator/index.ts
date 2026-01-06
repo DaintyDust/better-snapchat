@@ -1,7 +1,6 @@
 import settings from '../../lib/settings';
 import Module from '../../lib/module';
 import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
-import { logInfo } from '../../lib/debug';
 import { PresenceActionMap, PresenceState } from '../../lib/constants';
 import styles from './index.module.css';
 
@@ -108,9 +107,12 @@ function removePeekingIndicator(conversationId: string) {
   const container = getConversationContainerElementFromId(conversationId);
   if (container) {
     container.classList.remove('isPeeking');
+    // Wait for animation to complete before removing
     const peekingDiv = document.getElementById(`peeking-indicator-${conversationId}`);
     if (peekingDiv) {
-      peekingDiv.remove();
+      setTimeout(() => {
+        peekingDiv.remove();
+      }, 400); // Match the animation duration
     }
   }
 }
@@ -124,7 +126,10 @@ function onUserStartedPeeking(user: any, conversationId: string, conversation: a
   const container = getConversationContainerElementFromId(conversationId ?? '');
   if (container) {
     addPeekingIndicator(container, conversationId);
-    container.classList.add('isPeeking');
+    // Use requestAnimationFrame to ensure smooth animation trigger
+    requestAnimationFrame(() => {
+      container.classList.add('isPeeking');
+    });
   }
 }
 
