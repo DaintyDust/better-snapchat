@@ -78,6 +78,9 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
   const halfSwipeNotificationEnabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
   const presenceLoggingEnabled = settings.getSetting('PRESENCE_LOGGING');
 
+  const currentlyPeekingUsers = new Set<string>();
+  const currentlyTypingOrIdleUsers = new Set<string>();
+
   for (const [conversationId, { peekingParticipants, typingParticipants }] of activeConversationInfo.entries()) {
     const conversation = getConversation(conversationId)?.conversation;
     const conversationTitle = conversation?.title ?? 'your Chat';
@@ -88,13 +91,15 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
       const serializedId = serializeUserConversationId(userId, conversationId);
       const previousState = userPresenceMap.get(serializedId);
 
-      if (presenceLoggingEnabled) {
-        const action = PresenceActionMap[PresenceState.PEEKING](conversationTitle);
-        logInfo(`${user.display_name ?? user.username}:`, action);
-      }
+      currentlyPeekingUsers.add(serializedId);
 
       if (previousState === PresenceState.PEEKING) {
         continue;
+      }
+
+      if (presenceLoggingEnabled) {
+        const action = PresenceActionMap[PresenceState.PEEKING](conversationTitle);
+        logInfo(`${user.display_name ?? user.username}:`, action);
       }
 
       if (halfSwipeNotificationEnabled) {
@@ -116,16 +121,35 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
       const serializedId = serializeUserConversationId(userId, conversationId);
       const previousState = userPresenceMap.get(serializedId);
 
-      if (presenceLoggingEnabled) {
-        const action = PresenceActionMap[presenceState](conversationTitle);
-        logInfo(`${user.display_name ?? user.username}:`, action);
-      }
+      currentlyTypingOrIdleUsers.add(serializedId);
 
       if (previousState === presenceState) {
         continue;
       }
 
+      if (presenceLoggingEnabled) {
+        const action = PresenceActionMap[presenceState](conversationTitle);
+        logInfo(`${user.display_name ?? user.username}:`, action);
+      }
+
       userPresenceMap.set(serializedId, presenceState);
+    }
+  }
+
+  // Clear peeking state for users who stopped peeking
+  for (const [serializedId, state] of userPresenceMap.entries()) {
+    if (state === PresenceState.PEEKING && !currentlyPeekingUsers.has(serializedId)) {
+      userPresenceMap.delete(serializedId);
+    }
+  }
+
+  // Clear typing/idle state for users who stopped typing/idling
+  for (const [serializedId, state] of userPresenceMap.entries()) {
+    if (
+      (state === PresenceState.TYPING || state === PresenceState.IDLE) &&
+      !currentlyTypingOrIdleUsers.has(serializedId)
+    ) {
+      userPresenceMap.delete(serializedId);
     }
   }
 }
