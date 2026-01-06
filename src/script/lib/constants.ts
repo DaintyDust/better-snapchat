@@ -41,6 +41,8 @@ export const SettingIds = {
   OPEN_CHAT_NOTIFICATION: 'OPEN_CHAT_NOTIFICATION',
   CHAT_HANDLING: 'CHAT_HANDLING',
   PRESENCE_LOGGING: 'PRESENCE_LOGGING',
+  PRESENCE_LOGGING_TYPES: 'PRESENCE_LOGGING_TYPES',
+  PRESENCE_LOGGING_SHOW_TIMESTAMP: 'PRESENCE_LOGGING_SHOW_TIMESTAMP',
 } as const;
 
 export enum BitmojiPresence {
@@ -89,6 +91,8 @@ export const defaultSettingValues = {
   [SettingIds.BITMOJI_PRESENCE]: BitmojiPresence.DEFAULT,
   [SettingIds.CHAT_HANDLING]: ChatHandling.DEFAULT,
   [SettingIds.PRESENCE_LOGGING]: false,
+  [SettingIds.PRESENCE_LOGGING_TYPES]: JSON.stringify(['TYPING', 'IDLE', 'PEEKING', 'JOINED', 'LEFT']),
+  [SettingIds.PRESENCE_LOGGING_SHOW_TIMESTAMP]: true,
 };
 
 export type SettingId = keyof typeof SettingIds;
@@ -112,10 +116,14 @@ export enum PresenceState {
   TYPING = 'TYPING',
   IDLE = 'IDLE',
   PEEKING = 'PEEKING',
+  JOINED = 'JOINED',
+  LEFT = 'LEFT',
 }
 
 export const PresenceActionMap = {
   [PresenceState.TYPING]: (conversationTitle: string) => `Typing in ${conversationTitle}`,
   [PresenceState.IDLE]: (conversationTitle: string) => `Idle in ${conversationTitle}`,
   [PresenceState.PEEKING]: (conversationTitle: string) => `Peeked at ${conversationTitle}`,
+  [PresenceState.JOINED]: (conversationTitle: string) => `Joined ${conversationTitle}`,
+  [PresenceState.LEFT]: (conversationTitle: string) => `Left ${conversationTitle}`,
 };
