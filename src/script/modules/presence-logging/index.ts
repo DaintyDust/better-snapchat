@@ -103,13 +103,36 @@ function sendPresenceNotification({
 }
 
 /**
- * Logs a presence event with timestamp
+ * Checks if a presence state type is enabled for logging
+ */
+function isPresenceTypeEnabled(presenceState: PresenceState): boolean {
+  const loggingTypes = settings.getSetting('PRESENCE_LOGGING_TYPES');
+  try {
+    const types = typeof loggingTypes === 'string' ? JSON.parse(loggingTypes) : [];
+    return types.includes(presenceState);
+  } catch {
+    return true; // Default to enabled if parsing fails
+  }
+}
+
+/**
+ * Logs a presence event with optional timestamp
  */
 function logPresenceEvent(user: any, presenceState: PresenceState, conversationTitle: string): void {
-  const timestamp = getTimestamp();
+  if (!isPresenceTypeEnabled(presenceState)) {
+    return;
+  }
+
+  const showTimestamp = settings.getSetting('PRESENCE_LOGGING_SHOW_TIMESTAMP');
   const action = PresenceActionMap[presenceState](conversationTitle);
   const userName = user.display_name ?? user.username;
-  logInfo(`[${timestamp}] ${userName}:`, action);
+
+  if (showTimestamp) {
+    const timestamp = getTimestamp();
+    logInfo(`[${timestamp}] ${userName}:`, action);
+  } else {
+    logInfo(`${userName}:`, action);
+  }
 }
 
 const userPresenceMap: Map<string, PresenceState> = new Map();
@@ -298,6 +321,8 @@ class PresenceLogging extends Module {
     store.subscribe((storeState: any) => storeState.presence, this.load);
     settings.on('PRESENCE_LOGGING.setting:update', () => this.load());
     settings.on('HALF_SWIPE_NOTIFICATION.setting:update', () => this.load());
+    settings.on('PRESENCE_LOGGING_TYPES.setting:update', () => this.load());
+    settings.on('PRESENCE_LOGGING_SHOW_TIMESTAMP.setting:update', () => this.load());
   }
 
   load(presenceClient?: any): void {
