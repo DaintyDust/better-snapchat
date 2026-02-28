@@ -40,6 +40,14 @@ You can install **BetterSnap** via the [Firefox Addon Store](https://addons.mozi
 
 You can install **BetterSnap** via the [User-Script](https://better-snapchat.vasp.dev/build/userscript.js) with a tool like [Tampermonkey](https://www.tampermonkey.net/). -->
 
+## How to Compile
+
+1. Clone or fork the respository `git@github.com:daintydust/better-snapchat.git`.
+2. Install dependencies, typically by `npm install` in the root of the directory.
+3. Run `npm run build` to build the extension.
+4. The compiled extension will be available in the `/public` directory.
+5. Alternatively, you can run `npm run package` to package the extension.
+
 ## How to Contribute
 
 1. Clone or fork the respository `git@github.com:daintydust/better-snapchat.git`.
