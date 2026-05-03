@@ -1,6 +1,7 @@
-import { render, h } from 'preact';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './SettingsMenu';
-import Module from '../../lib/module';
+import Module from '@lib/module';
 
 const APP_CONTAINER_ID = 'better-snap-app';
 
@@ -19,7 +20,7 @@ class SettingsMenu extends Module {
     appContainer = document.createElement('div');
     appContainer.setAttribute('id', APP_CONTAINER_ID);
     document.body.appendChild(appContainer);
-    render(h(App, {}), appContainer);
+    createRoot(appContainer).render(React.createElement(App));
 
     this.handleResize();
     window.addEventListener('resize', this.handleResize.bind(this));

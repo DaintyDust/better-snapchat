@@ -1,13 +1,16 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
-import { PresenceActionMap, PresenceState } from '../../lib/constants';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
+import { PresenceActionMap, PresenceState } from '@lib/constants';
 import styles from './index.module.css';
 
 const store = getSnapchatStore();
 
 let oldOnActiveConversationInfoUpdated: any = null;
 let newOnActiveConversationInfoUpdated: any = null;
+
+const FRIEND_PREFIX = 'friend::';
+const GROUP_PREFIX = 'group::';
 
 function sendNtfyNotification({
   user,
@@ -164,12 +167,22 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
       if (enabled) {
         const { username, display_name: displayName } = user;
         const conversationTitle = conversation?.title ?? 'your Chat';
-        const ignoredNames = typeof ntfyIgnoredNames === 'string' ? JSON.parse(ntfyIgnoredNames) : [];
-        if (
-          ignoredNames.includes(displayName) ||
-          ignoredNames.includes(username) ||
-          ignoredNames.includes(conversationTitle)
-        ) {
+        const isGroupConversation = Array.isArray(conversation?.participants) && conversation.participants.length > 2;
+        let ignoredNames: string[] = [];
+        if (typeof ntfyIgnoredNames === 'string') {
+          try {
+            const parsed = JSON.parse(ntfyIgnoredNames);
+            if (Array.isArray(parsed)) {
+              ignoredNames = parsed;
+            }
+          } catch {
+            ignoredNames = [];
+          }
+        }
+        const ignoredFriendId = `${FRIEND_PREFIX}${userId}`;
+        const ignoredGroupId = `${GROUP_PREFIX}${conversationId}`;
+        const isIgnored = isGroupConversation ? ignoredNames.includes(ignoredGroupId) : ignoredNames.includes(ignoredFriendId);
+        if (isIgnored) {
           return;
         }
         if (peekingIndicatorEnabled) {

@@ -1,7 +1,7 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getAllConversations, getSnapchatPublicUser, getFriends, getSnapchatStore } from '../../utils/snapchat';
-import { logError } from '../../lib/debug';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getAllConversations, getSnapchatPublicUser, getFriends, getSnapchatStore } from '@utils/snapchat';
+import { logError } from '@lib/debug';
 
 function initializeUserInfo() {
   try {
@@ -60,8 +60,7 @@ async function setTagsInputData() {
   const totalChats = Object.keys(FRIENDS).length + Object.keys(GROUP_CHATS).length;
 
   const existingSetting = settings.getSetting('STORED_CONVERSATIONS_NAMES');
-  const existingData = existingSetting ? JSON.parse(existingSetting) : null;
-
+  const existingData = typeof existingSetting === 'string' ? JSON.parse(existingSetting) : null;
   const newData = {
     groupChatTitles: groupChatTitles,
     users: users,

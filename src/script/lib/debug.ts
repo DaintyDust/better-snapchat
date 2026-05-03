@@ -21,6 +21,11 @@ export function logInfo(...args: unknown[]) {
   console.log(`%c${PREFIX}`, 'color: #3b5bdb', ...args);
 }
 
+export function logDebug(...args: unknown[]) {
+  const { console } = getIframeContentWindow();
+  console.log(`%c${PREFIX}`, 'color: #783bdb', ...args);
+}
+
 export function logError(...args: unknown[]) {
   const { console } = getIframeContentWindow();
   console.error(PREFIX, ...args);

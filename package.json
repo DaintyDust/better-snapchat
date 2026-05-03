@@ -1,6 +1,6 @@
 {
   "name": "BetterSnap - Make Snapchat Web Better",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Screenshot Freely, Save Media, Bypass Presence Detection and more! Previously known as Better Snapchat.",
   "scripts": {
     "start": "rm -rf ./public/build/ && node ./scripts/dev.js",
@@ -21,15 +21,15 @@
     "type": "git",
     "url": "git+https://github.com/daintydust/better-snapchat.git"
   },
-  "author": "donnieacolston@gmail.com, dev@daintydust.dev",
+  "author": "dev@daintydust.dev",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/daintydust/better-snapchat/issues"
   },
   "homepage": "https://github.com/daintydust/better-snapchat#readme",
   "dependencies": {
-    "@mantine/core": "7.17.3",
-    "@mantine/hooks": "^7.6.2",
+    "@mantine/core": "^9.0.1",
+    "@mantine/hooks": "^9.0.1",
     "@tabler/icons-react": "^3.19.0",
     "clsx": "^2.1.1",
     "cookies-js": "^1.2.3",
@@ -37,10 +37,9 @@
     "fast-deep-equal": "^3.1.3",
     "fuse.js": "^7.0.0",
     "lodash.throttle": "^4.1.1",
-    "preact": "^10.25.0",
-    "react": "npm:@preact/compat",
-    "react-dom": "npm:@preact/compat",
-    "reconnecting-websocket": "^4.4.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
@@ -69,6 +68,8 @@
     "globals": "^16.0.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.3.3",
+    "reconnecting-websocket": "^4.4.0",
+    "typescript": "^6.0.2",
     "ws": "^8.18.2"
   }
 }

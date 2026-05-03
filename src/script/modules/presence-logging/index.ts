@@ -1,13 +1,16 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
-import { logInfo } from '../../lib/debug';
-import { PresenceActionMap, PresenceState } from '../../lib/constants';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
+import { logInfo } from '@lib/debug';
+import { PresenceActionMap, PresenceState } from '@lib/constants';
 
 const store = getSnapchatStore();
 
 let oldOnActiveConversationInfoUpdated: any = null;
 let newOnActiveConversationInfoUpdated: any = null;
+
+const FRIEND_PREFIX = 'friend::';
+const GROUP_PREFIX = 'group::';
 
 /**
  * Gets a formatted timestamp string
@@ -43,15 +46,27 @@ function getBitmojiIconUrl(user: any): string | undefined {
 /**
  * Checks if a user should be ignored based on settings
  */
-function shouldIgnoreUser(user: any, conversationTitle: string): boolean {
+function shouldIgnoreUser(user: any, conversation: any, conversationId?: string): boolean {
   const ntfyIgnoredNames = settings.getSetting('NTFY_IGNORED_NAMES');
-  const ignoredNames = typeof ntfyIgnoredNames === 'string' ? JSON.parse(ntfyIgnoredNames) : [];
+  let ignoredNames: string[] = [];
+  if (typeof ntfyIgnoredNames === 'string') {
+    try {
+      const parsed = JSON.parse(ntfyIgnoredNames);
+      if (Array.isArray(parsed)) {
+        ignoredNames = parsed;
+      }
+    } catch {
+      ignoredNames = [];
+    }
+  }
 
-  return (
-    ignoredNames.includes(user.display_name) ||
-    ignoredNames.includes(user.username) ||
-    ignoredNames.includes(conversationTitle)
-  );
+  const ignoredFriendId = `${FRIEND_PREFIX}${user.user_id}`;
+  const ignoredGroupId = conversationId ? `${GROUP_PREFIX}${conversationId}` : '';
+  const isGroupConversation = Array.isArray(conversation?.participants) && conversation.participants.length > 2;
+
+  const isIgnored = isGroupConversation ? ignoredGroupId !== '' && ignoredNames.includes(ignoredGroupId) : ignoredNames.includes(ignoredFriendId);
+
+  return isIgnored;
 }
 
 /**
@@ -74,7 +89,7 @@ function sendPresenceNotification({
     return null;
   }
 
-  if (shouldIgnoreUser(user, conversationTitle)) {
+  if (shouldIgnoreUser(user, conversation, conversationId)) {
     return null;
   }
 
@@ -145,8 +160,7 @@ const userPresenceTracking: Map<string, boolean> = new Map();
 /**
  * Serializes a user ID and conversation ID into a unique key
  */
-const serializeUserConversationId = (userId: string, conversationId?: string): string =>
-  `${userId}:${conversationId ?? 'direct'}`;
+const serializeUserConversationId = (userId: string, conversationId?: string): string => `${userId}:${conversationId ?? 'direct'}`;
 
 /**
  * Handles active conversation info updates and tracks presence changes
@@ -158,12 +172,9 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
   const currentlyPeekingUsers = new Set<string>();
   const currentlyTypingOrIdleUsers = new Set<string>();
   const currentlyPresentUsers = new Set<string>();
-
+  logInfo(activeConversationInfo);
   // Process all conversations
-  for (const [
-    conversationId,
-    { peekingParticipants, typingParticipants, presentParticipants },
-  ] of activeConversationInfo.entries()) {
+  for (const [conversationId, { peekingParticipants, typingParticipants, presentParticipants }] of activeConversationInfo.entries()) {
     const conversation = getConversation(conversationId)?.conversation;
     const conversationTitle = conversation?.title ?? 'your Chat';
 
@@ -178,6 +189,7 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
     // Handle peeking participants
     for (const userId of peekingParticipants) {
       const user = await getSnapchatPublicUser(userId);
+      if (!user) continue;
       const serializedId = serializeUserConversationId(userId, conversationId);
       const previousState = userPresenceMap.get(serializedId);
 
@@ -310,10 +322,7 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
 
   // Clean up typing/idle state for users who stopped typing/idling
   for (const [serializedId, state] of userPresenceMap.entries()) {
-    if (
-      (state === PresenceState.TYPING || state === PresenceState.IDLE) &&
-      !currentlyTypingOrIdleUsers.has(serializedId)
-    ) {
+    if ((state === PresenceState.TYPING || state === PresenceState.IDLE) && !currentlyTypingOrIdleUsers.has(serializedId)) {
       userPresenceMap.delete(serializedId);
     }
   }
@@ -342,7 +351,7 @@ class PresenceLogging extends Module {
 
     if (enabled && presenceClient.onActiveConversationInfoUpdated !== newOnActiveConversationInfoUpdated) {
       oldOnActiveConversationInfoUpdated = presenceClient.onActiveConversationInfoUpdated;
-
+      logInfo(presenceClient, presenceClient.onActiveConversationInfoUpdated, newOnActiveConversationInfoUpdated);
       newOnActiveConversationInfoUpdated = new Proxy(oldOnActiveConversationInfoUpdated, {
         apply(targetFunc: any, thisArg: any, [activeConversationPayload, ...rest]: any) {
           handleOnActiveConversationInfoUpdated(activeConversationPayload);
