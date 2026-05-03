@@ -1,4 +1,4 @@
-import { logInfo } from '../lib/debug';
+import { logInfo } from '@lib/debug';
 
 type WebpackRequire = <T>(id: string) => T;
 
@@ -100,9 +100,7 @@ export function getProvConsts() {
   }
 
   const module = webpackRequire(someModuleId) as Record<string, any>;
-  const provConsts = Object.values(module).find(
-    (value) => value.SNAPCHAT_WEB_APP != null && value.SNAPCHAT_WEB_APP != null,
-  );
+  const provConsts = Object.values(module).find((value) => value.SNAPCHAT_WEB_APP != null && value.SNAPCHAT_WEB_APP != null);
 
   return provConsts;
 }
@@ -120,8 +118,10 @@ export async function getSnapchatPublicUser(userId: string, retry = true) {
     await fetchPublicInfo([serializedId]);
     return getSnapchatPublicUser(userId, false);
   }
+  if (user == null || user[1] == null) return null;
+  const newUser = { ...user[1], user_id: user[1].user_id.str };
 
-  return user != null ? user[1] : null;
+  return newUser != null ? newUser : null;
 }
 
 export function getSerializedSnapchatId(uuid: string): { id: Uint8Array; str: string } {

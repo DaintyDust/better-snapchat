@@ -1,6 +1,6 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getCofStore } from '../../utils/snapchat';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getCofStore } from '@utils/snapchat';
 
 enum CofKeys {
   DWEB_SNAP_SENDING_CONTEXT = 'DWEB_SNAP_SENDING_CONTEXT',

@@ -1,6 +1,9 @@
 import { logError, logInfo } from './debug';
-
-export default class Module {
+interface ModuleInterface {
+  name: string;
+  load(): void;
+}
+export default class Module implements ModuleInterface {
   name: string;
 
   constructor(name: string) {

@@ -5,14 +5,23 @@ import Logo from './icons/BetterSnap';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import DiscordIcon from './icons/Discord';
 import Fuse from 'fuse.js';
-import { type SettingModule } from '../../../../types/client';
+import { type SettingModule } from '@app-types/client';
 // @ts-ignore glob-import
 import * as migrations from './settings/*.tsx';
-import { defaultSettingValues, ExternalUrls } from '../../../lib/constants';
-import settingsManager from '../../../lib/settings';
+import { defaultSettingValues, ExternalUrls } from '@lib/constants';
+import settingsManager from '@lib/settings';
 
 const { default: settingsDefault } = migrations;
-const settings = settingsDefault.map(({ default: setting }: { default: SettingModule }) => setting);
+const settings = settingsDefault
+  .map(({ default: setting }: { default?: SettingModule }) => setting)
+  .filter((setting: unknown): setting is SettingModule => {
+    if (!setting || typeof setting !== 'object') {
+      return false;
+    }
+
+    const candidate = setting as Partial<SettingModule>;
+    return typeof candidate.component === 'function' && candidate.name !== undefined && candidate.description !== undefined;
+  });
 
 function ModalSettings({ search }: { search: string }) {
   const fuse = React.useMemo(() => new Fuse(settings, { keys: ['name', 'description'] }), []);

@@ -1,5 +1,5 @@
-import Patch from '../lib/patch';
-import settings from '../lib/settings';
+import Patch from '@lib/patch';
+import settings from '@lib/settings';
 
 const STORY_READ_RECEIPT_REGEX = /\/readreceipt-indexer\/batchuploadreadreceipts/;
 

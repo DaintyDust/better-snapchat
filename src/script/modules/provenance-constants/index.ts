@@ -1,6 +1,6 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getProvConsts } from '../../utils/snapchat';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getProvConsts } from '@utils/snapchat';
 
 let oldWebAppConst: any = null;
 class ProvenanceConstants extends Module {

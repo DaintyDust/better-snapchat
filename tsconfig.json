@@ -3,6 +3,27 @@
     "jsx": "react",
     "target": "es2019",
     "module": "commonjs",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@hooks/*": [
+        "./src/script/hooks/*"
+      ],
+      "@lib/*": [
+        "./src/script/lib/*"
+      ],
+      "@app-types/*": [
+        "./src/types/*"
+      ],
+      "@utils/*": [
+        "./src/script/utils/*"
+      ],
+      "@modules/*": [
+        "./src/script/modules/*"
+      ]
+    },
+    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

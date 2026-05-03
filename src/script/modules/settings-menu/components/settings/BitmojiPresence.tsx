@@ -1,7 +1,7 @@
 import React from 'react';
 import { Radio, Stack } from '@mantine/core';
-import useSettingState from '../../../../hooks/useSettingState';
-import { BitmojiPresence } from '../../../../lib/constants';
+import useSettingState from '@hooks/useSettingState';
+import { BitmojiPresence } from '@lib/constants';
 
 const NAME = 'Bitmoji Presence';
 

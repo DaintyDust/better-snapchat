@@ -4,8 +4,13 @@ window.addEventListener('message', (event) => {
   }
 
   if (event.data && event.data.type === 'BETTERSNAP_TO_BACKGROUND') {
+    const runtime = (globalThis as any).chrome?.runtime;
     const { payload } = event.data;
 
-    chrome.runtime.sendMessage(payload);
+    if (!runtime?.sendMessage || typeof payload !== 'object') {
+      return;
+    }
+
+    runtime.sendMessage(payload);
   }
 });

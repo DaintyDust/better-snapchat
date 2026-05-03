@@ -1,5 +1,5 @@
 import React from 'react';
-import useSettingState from '../../../../hooks/useSettingState';
+import useSettingState from '@hooks/useSettingState';
 import { Switch } from '@mantine/core';
 
 const NAME = 'Always Present';

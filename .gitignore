@@ -12,3 +12,4 @@ public/manifest.json
 .DS_Store
 *.bat
 *.ps1
+*.backup*

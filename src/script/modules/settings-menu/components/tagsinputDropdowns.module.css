@@ -16,41 +16,6 @@
   animation-fill-mode: forwards;
 }
 
-.optionHover:hover {
-  background-color: var(--mantine-primary-color-filled);
-  font-weight: 500;
-}
-
-.pill {
-  font-size: var(--mantine-font-size-md);
-  border-radius: var(--mantine-radius-default);
-  background-color: var(--mantine-primary-color-filled);
-  color: var(--mantine-color-gray-0);
-}
-
-.dropdown {
-  min-width: 300px;
-  max-width: 500px;
-  width: fit-content;
-  padding: var(--mantine-spacing-xs) 4px;
-  padding-inline-end: 0px;
-  overflow-y: auto;
-  max-height: calc(12.5rem * var(--mantine-scale));
-
-  &::-webkit-scrollbar {
-    width: 8px;
-    background: unset;
-    border: unset;
-  }
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--mantine-color-gray-light);
-    border-radius: 8px;
-  }
-}
-
 .dropdownText {
   -webkit-tap-highlight-color: transparent;
   text-decoration: none;

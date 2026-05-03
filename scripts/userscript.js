@@ -3,6 +3,7 @@ const EsbuildPluginImportGlob = require('esbuild-plugin-import-glob');
 const CSSModulesPlugin = require('esbuild-css-modules-plugin');
 const package = require('../package.json');
 const alias = require('esbuild-plugin-alias');
+const path = require('path');
 const fs = require('fs/promises');
 
 const USER_SCRIPT_METADATA = (scriptTextContent, styleTextContent) => `
@@ -49,8 +50,12 @@ GM_addElement('link', {
       EsbuildPluginImportGlob.default(),
       CSSModulesPlugin(),
       alias({
-        react: require.resolve('preact/compat'),
-        'react-dom': require.resolve('preact/compat'),
+        '@': path.resolve(__dirname, '../src'),
+        '@hooks': path.resolve(__dirname, '../src/script/hooks'),
+        '@lib': path.resolve(__dirname, '../src/script/lib'),
+        '@app-types': path.resolve(__dirname, '../src/types'),
+        '@utils': path.resolve(__dirname, '../src/script/utils'),
+        '@modules': path.resolve(__dirname, '../src/script/modules'),
       }),
     ],
     define: { 'process.env.VERSION': JSON.stringify(package.version) },

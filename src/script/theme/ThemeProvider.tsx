@@ -1,9 +1,10 @@
 import React from 'react';
-import { createTheme, InputWrapper, MantineProvider, Radio, Switch } from '@mantine/core';
-import { getSnapchatStore } from '../utils/snapchat';
+import { createTheme, InputWrapper, MantineProvider, Radio, Switch, TagsInput, Pill } from '@mantine/core';
+import { getSnapchatStore } from '@utils/snapchat';
 import styles from './ThemeProvider.module.css';
 import switchStyles from './Switch.module.css';
 import inputWrapperStyles from './InputWrapper.module.css';
+import tagsInputStyles from './TagsInput.module.css';
 
 const store = getSnapchatStore();
 
@@ -17,8 +18,14 @@ const mantineTheme = createTheme({
   components: {
     Radio: Radio.extend({ defaultProps: { size: 'md' } }),
     Switch: Switch.extend({
-      defaultProps: { size: 'md' },
+      defaultProps: { size: 'md', withThumbIndicator: false },
       classNames: { body: switchStyles.body, track: switchStyles.track, trackLabel: switchStyles.track },
+    }),
+    TagsInput: TagsInput.extend({
+      classNames: { option: tagsInputStyles.option, dropdown: tagsInputStyles.dropdown, pill: tagsInputStyles.pill },
+    }),
+    Pill: Pill.extend({
+      classNames: { root: tagsInputStyles.pill },
     }),
     InputWrapper: InputWrapper.extend({
       classNames: { label: inputWrapperStyles.label },
