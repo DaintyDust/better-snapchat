@@ -4,6 +4,7 @@ const CSSModulesPlugin = require('esbuild-css-modules-plugin');
 const package = require('../package.json');
 const fs = require('fs/promises');
 const alias = require('esbuild-plugin-alias');
+const path = require('path');
 const dotenv = require('dotenv');
 const chokidar = require('chokidar');
 const { WebSocketServer } = require('ws');
@@ -67,6 +68,12 @@ async function buildExtension() {
         alias({
           react: require.resolve('preact/compat'),
           'react-dom': require.resolve('preact/compat'),
+          '@': path.resolve(__dirname, '../src'),
+          '@hooks': path.resolve(__dirname, '../src/script/hooks'),
+          '@lib': path.resolve(__dirname, '../src/script/lib'),
+          '@app-types': path.resolve(__dirname, '../src/types'),
+          '@utils': path.resolve(__dirname, '../src/script/utils'),
+          '@modules': path.resolve(__dirname, '../src/script/modules'),
         }),
       ],
       define: {

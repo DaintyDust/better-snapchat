@@ -5,6 +5,9 @@
 <!--![Node CI badge](https://github.com/daintydust/better-snapchat/actions/workflows/node.js.yml/badge.svg)-->
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/Sq4DEhPcZh?style=flat)](https://discord.gg/Sq4DEhPcZh)
 
+> [!IMPORTANT]  
+> BetterChat is an independent browser extension and is **NOT affiliated with, sponsored by, or endorsed by Snap Inc. in any way**. The use of any Snap-related terms or marks in this extension is for descriptive purposes only and does not imply any association with Snap Inc. All trademarks and brand names are the property of their respective owners.
+
 Screenshot Freely, Save Media, Bypass Presence Detection and more! Previously known as Better Snapchat.
 
 - 👤 **Always Present** – Bypass Snapchat's presence detection.
@@ -25,6 +28,9 @@ Screenshot Freely, Save Media, Bypass Presence Detection and more! Previously kn
 - 🔒 **Private Stories** – Interact with private stories on web.
 
 ✨ And more!
+
+> [!WARNING]
+> This extension is provided "as is" without any warranties, guarantees, or assurances of reliability or compatibility. By using BetterChat, you acknowledge that you do so at your own risk, and the developers are not liable for any issues, data loss, or other consequences that may arise from its use.
 
 <!-- ## How to install
 

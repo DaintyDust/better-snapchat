@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack, Switch, Text, Paper } from '@mantine/core';
-import useSettingState from '../../../../hooks/useSettingState';
-import { PresenceState } from '../../../../lib/constants';
+import useSettingState from '@hooks/useSettingState';
+import { PresenceState } from '@lib/constants';
 
 const NAME = 'Presence Logging';
 const DESCRIPTION = 'Log presence changes to the dev-console.';

@@ -1,7 +1,7 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
-import { PresenceActionMap, PresenceState } from '../../lib/constants';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
+import { PresenceActionMap, PresenceState } from '@lib/constants';
 import styles from './index.module.css';
 
 const store = getSnapchatStore();
@@ -9,17 +9,7 @@ const store = getSnapchatStore();
 let oldOnActiveConversationInfoUpdated: any = null;
 let newOnActiveConversationInfoUpdated: any = null;
 
-function sendNtfyNotification({
-  user,
-  presenceState,
-  conversation,
-  conversationId,
-}: {
-  user: any;
-  presenceState: PresenceState;
-  conversation: any;
-  conversationId?: string;
-}) {
+function sendNtfyNotification({ user, presenceState, conversation, conversationId }: { user: any; presenceState: PresenceState; conversation: any; conversationId?: string }) {
   const ntfyEnabled = settings.getSetting('NTFY_ENABLED');
   const ntfyTopic = settings.getSetting('NTFY_TOPIC');
 
@@ -28,12 +18,7 @@ function sendNtfyNotification({
   // logInfo('conversation', conversation);
   // logInfo('conversationId', conversationId);
 
-  const {
-    username,
-    bitmoji_avatar_id: bitmojiAvatarId,
-    bitmoji_selfie_id: bitmojiSelfieId,
-    display_name: displayName,
-  } = user;
+  const { username, bitmoji_avatar_id: bitmojiAvatarId, bitmoji_selfie_id: bitmojiSelfieId, display_name: displayName } = user;
   const conversationTitle = conversation?.title ?? 'your Chat';
 
   const navigationPath = `snapchat://feed?conversation_id=${conversationId}`; //`/web/${conversationId}`;
@@ -71,8 +56,7 @@ function sendNtfyNotification({
 }
 
 const userPresenceMap: Map<string, PresenceState> = new Map();
-const serializeUserConversationId = (userId: string, conversationId?: string) =>
-  `${userId}:${conversationId ?? 'direct'}`;
+const serializeUserConversationId = (userId: string, conversationId?: string) => `${userId}:${conversationId ?? 'direct'}`;
 
 function addPeekingIndicator(container: Element, conversation_id?: string) {
   const O4POsElement = container.querySelector('.O4POs');
@@ -165,11 +149,7 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
         const { username, display_name: displayName } = user;
         const conversationTitle = conversation?.title ?? 'your Chat';
         const ignoredNames = typeof ntfyIgnoredNames === 'string' ? JSON.parse(ntfyIgnoredNames) : [];
-        if (
-          ignoredNames.includes(displayName) ||
-          ignoredNames.includes(username) ||
-          ignoredNames.includes(conversationTitle)
-        ) {
+        if (ignoredNames.includes(displayName) || ignoredNames.includes(username) || ignoredNames.includes(conversationTitle)) {
           return;
         }
         if (peekingIndicatorEnabled) {

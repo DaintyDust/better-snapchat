@@ -1,9 +1,9 @@
 import deepEqual from 'fast-deep-equal';
 import throttle from 'lodash.throttle';
-import settings from '../../lib/settings';
-import { ChatHandling, SnapchatUpdateMessagePayload } from '../../lib/constants';
-import { getSnapchatStore } from '../../utils/snapchat';
-import Module from '../../lib/module';
+import settings from '@lib/settings';
+import { ChatHandling, SnapchatUpdateMessagePayload } from '@lib/constants';
+import { getSnapchatStore } from '@utils/snapchat';
+import Module from '@lib/module';
 
 const THROTTLE_TIME = 500;
 

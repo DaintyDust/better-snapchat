@@ -1,4 +1,4 @@
-import { logInfo } from '../lib/debug';
+import { logInfo } from '@lib/debug';
 
 type WebpackRequire = <T>(id: string) => T;
 

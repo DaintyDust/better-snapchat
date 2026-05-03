@@ -1,6 +1,6 @@
 import React from 'react';
-import { defaultSettingValues, SettingId } from '../lib/constants';
-import settings from '../lib/settings';
+import { defaultSettingValues, SettingId } from '@lib/constants';
+import settings from '@lib/settings';
 
 // eslint-disable-next-line no-unused-vars
 export default function useSettingState<T extends SettingId>(

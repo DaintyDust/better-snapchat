@@ -1,4 +1,4 @@
-import Patch from '../lib/patch';
+import Patch from '@lib/patch';
 
 class UserMediaPermissions extends Patch {
   constructor() {
@@ -6,11 +6,7 @@ class UserMediaPermissions extends Patch {
   }
 
   patch() {
-    if (
-      !('permissions' in navigator) ||
-      typeof navigator.permissions.query !== 'function' ||
-      !navigator.userAgent.toLowerCase().includes('firefox')
-    ) {
+    if (!('permissions' in navigator) || typeof navigator.permissions.query !== 'function' || !navigator.userAgent.toLowerCase().includes('firefox')) {
       return;
     }
 

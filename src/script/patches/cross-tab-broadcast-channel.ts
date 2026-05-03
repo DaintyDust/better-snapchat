@@ -1,5 +1,5 @@
-import Patch from '../lib/patch';
-import settings from '../lib/settings';
+import Patch from '@lib/patch';
+import settings from '@lib/settings';
 
 class CrossTabBroadcastChannel extends Patch {
   constructor() {
@@ -10,11 +10,7 @@ class CrossTabBroadcastChannel extends Patch {
     window.BroadcastChannel = class PatchedBroadcastChannel extends window.BroadcastChannel {
       addEventListener(type: string, listener: EventListener) {
         return super.addEventListener(type, ((event: MessageEvent) => {
-          if (
-            this.name === 'cross_tab' &&
-            settings.getSetting('ALLOW_CROSS_TAB') &&
-            event.data.type === 'CLAIM_ACTIVE'
-          ) {
+          if (this.name === 'cross_tab' && settings.getSetting('ALLOW_CROSS_TAB') && event.data.type === 'CLAIM_ACTIVE') {
             return;
           }
 

@@ -1,7 +1,7 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getAllConversations, getSnapchatPublicUser, getFriends, getSnapchatStore } from '../../utils/snapchat';
-import { logError } from '../../lib/debug';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getAllConversations, getSnapchatPublicUser, getFriends, getSnapchatStore } from '@utils/snapchat';
+import { logError, logInfo } from '@lib/debug';
 
 function initializeUserInfo() {
   try {

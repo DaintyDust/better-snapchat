@@ -1,8 +1,8 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
-import { logInfo } from '../../lib/debug';
-import { PresenceActionMap, PresenceState } from '../../lib/constants';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
+import { logError, logInfo } from '@lib/debug';
+import { PresenceActionMap, PresenceState } from '@lib/constants';
 
 const store = getSnapchatStore();
 
@@ -47,11 +47,7 @@ function shouldIgnoreUser(user: any, conversationTitle: string): boolean {
   const ntfyIgnoredNames = settings.getSetting('NTFY_IGNORED_NAMES');
   const ignoredNames = typeof ntfyIgnoredNames === 'string' ? JSON.parse(ntfyIgnoredNames) : [];
 
-  return (
-    ignoredNames.includes(user.display_name) ||
-    ignoredNames.includes(user.username) ||
-    ignoredNames.includes(conversationTitle)
-  );
+  return ignoredNames.includes(user.display_name) || ignoredNames.includes(user.username) || ignoredNames.includes(conversationTitle);
 }
 
 /**
@@ -145,8 +141,7 @@ const userPresenceTracking: Map<string, boolean> = new Map();
 /**
  * Serializes a user ID and conversation ID into a unique key
  */
-const serializeUserConversationId = (userId: string, conversationId?: string): string =>
-  `${userId}:${conversationId ?? 'direct'}`;
+const serializeUserConversationId = (userId: string, conversationId?: string): string => `${userId}:${conversationId ?? 'direct'}`;
 
 /**
  * Handles active conversation info updates and tracks presence changes
@@ -160,10 +155,7 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
   const currentlyPresentUsers = new Set<string>();
 
   // Process all conversations
-  for (const [
-    conversationId,
-    { peekingParticipants, typingParticipants, presentParticipants },
-  ] of activeConversationInfo.entries()) {
+  for (const [conversationId, { peekingParticipants, typingParticipants, presentParticipants }] of activeConversationInfo.entries()) {
     const conversation = getConversation(conversationId)?.conversation;
     const conversationTitle = conversation?.title ?? 'your Chat';
 
@@ -178,6 +170,7 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
     // Handle peeking participants
     for (const userId of peekingParticipants) {
       const user = await getSnapchatPublicUser(userId);
+      if (!user) continue;
       const serializedId = serializeUserConversationId(userId, conversationId);
       const previousState = userPresenceMap.get(serializedId);
 
@@ -310,10 +303,7 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
 
   // Clean up typing/idle state for users who stopped typing/idling
   for (const [serializedId, state] of userPresenceMap.entries()) {
-    if (
-      (state === PresenceState.TYPING || state === PresenceState.IDLE) &&
-      !currentlyTypingOrIdleUsers.has(serializedId)
-    ) {
+    if ((state === PresenceState.TYPING || state === PresenceState.IDLE) && !currentlyTypingOrIdleUsers.has(serializedId)) {
       userPresenceMap.delete(serializedId);
     }
   }

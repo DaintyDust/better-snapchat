@@ -1,5 +1,4 @@
 import React from 'react';
-import { logInfo } from '../../../../lib/debug';
 
 export function No_Bitmoji_Icon({ size }: { size: number }) {
   return (
@@ -24,13 +23,7 @@ const getBitmojiUrl = (user?: { bitmoji_selfie_id?: string; bitmoji_avatar_id?: 
   return iconUrl;
 };
 
-export function Group_Bitmoji_Icon({
-  size,
-  users,
-}: {
-  size: number;
-  users: Array<{ user: { bitmoji_selfie_id?: string; bitmoji_avatar_id?: string } }>;
-}) {
+export function Group_Bitmoji_Icon({ size, users }: { size: number; users: Array<{ user: { bitmoji_selfie_id?: string; bitmoji_avatar_id?: string } }> }) {
   const selectThreeUsersWithBitmojis = () => {
     if (!users || users.length === 0) {
       return [undefined, undefined, undefined];

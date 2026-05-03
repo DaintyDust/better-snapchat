@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import cx from 'clsx';
 import { Switch, TextInput, Stack, Text, TagsInput, TagsInputProps, Group, Image } from '@mantine/core';
-import useSettingState from '../../../../hooks/useSettingState';
-import { logInfo } from '../../../../lib/debug';
-import settings from '../../../../lib/settings';
-import { getConversation, getMultipleSnapchatPublicUsers } from '../../../../utils/snapchat';
+import useSettingState from '@hooks/useSettingState';
+import { logInfo } from '@lib/debug';
+import settings from '@lib/settings';
+import { getConversation, getMultipleSnapchatPublicUsers } from '@utils/snapchat';
 import { No_Bitmoji_Icon, Group_Bitmoji_Icon } from '../icons/Bitmoji';
 import classes from '../tagsinputDropdowns.module.css';
 

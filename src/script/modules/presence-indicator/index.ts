@@ -1,6 +1,6 @@
-import settings from '../../lib/settings';
-import Module from '../../lib/module';
-import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '../../utils/snapchat';
+import settings from '@lib/settings';
+import Module from '@lib/module';
+import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
 import styles from './index.module.css';
 
 const store = getSnapchatStore();
@@ -93,9 +93,7 @@ function updatePresenceIndicators(conversationId: string, presentUserIds: string
   }
 
   // Get all current indicators for this conversation
-  const existingIndicators = container.querySelectorAll(
-    `.${styles.presenceDot}[data-conversation-id="${conversationId}"]`,
-  );
+  const existingIndicators = container.querySelectorAll(`.${styles.presenceDot}[data-conversation-id="${conversationId}"]`);
   const existingUserIds = new Set<string>();
 
   existingIndicators.forEach((indicator) => {
@@ -200,10 +198,7 @@ class PresenceIndicator extends Module {
       const presenceIndicatorEnabled = settings.getSetting('PRESENCE_INDICATOR');
       const changedValues: any = {};
 
-      if (
-        presenceIndicatorEnabled &&
-        presenceClient.onActiveConversationInfoUpdated !== newOnActiveConversationInfoUpdated
-      ) {
+      if (presenceIndicatorEnabled && presenceClient.onActiveConversationInfoUpdated !== newOnActiveConversationInfoUpdated) {
         oldOnActiveConversationInfoUpdated = presenceClient.onActiveConversationInfoUpdated;
 
         newOnActiveConversationInfoUpdated = new Proxy(oldOnActiveConversationInfoUpdated, {
