@@ -1,10 +1,11 @@
 const ESBuild = require('esbuild');
 const EsbuildPluginImportGlob = require('esbuild-plugin-import-glob');
-const CSSModulesPlugin = require('esbuild-css-modules-plugin');
 const package = require('../package.json');
 const fs = require('fs/promises');
 const alias = require('esbuild-plugin-alias');
 const path = require('path');
+const { sassPlugin } = require('esbuild-sass-plugin');
+const { transform } = require('lightningcss');
 
 (async () => {
   console.log('Building: Chrome Extension');
@@ -20,10 +21,20 @@ const path = require('path');
     logLevel: 'info',
     plugins: [
       EsbuildPluginImportGlob.default(),
-      CSSModulesPlugin(),
+      sassPlugin({
+        type: 'css-text',
+        filter: /\.(scss|css)$/,
+        transform: (code, _, filePath) => {
+          const { code: transformedCode } = transform({
+            code: Buffer.from(code),
+            filename: filePath,
+            minify: true,
+          });
+
+          return transformedCode.toString();
+        },
+      }),
       alias({
-        react: require.resolve('preact/compat'),
-        'react-dom': require.resolve('preact/compat'),
         '@': path.resolve(__dirname, '../src'),
         '@hooks': path.resolve(__dirname, '../src/script/hooks'),
         '@lib': path.resolve(__dirname, '../src/script/lib'),
@@ -53,7 +64,6 @@ const path = require('path');
       {
         matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
         js: ['./build/script.js'],
-        css: ['./build/script.css'],
         run_at: 'document_start',
         world: 'MAIN',
       },

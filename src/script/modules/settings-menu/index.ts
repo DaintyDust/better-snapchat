@@ -1,10 +1,25 @@
-import { render, h } from 'preact';
-import App from './SettingsMenu';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './components/SettingsMenu';
 import Module from '@lib/module';
+import { generateTagName } from '@utils/document';
+import shadowDomStyles from './styles';
 
-const APP_CONTAINER_ID = 'better-snap-app';
+const APP_CONTAINER_ID = generateTagName();
 
-let appContainer: HTMLDivElement | null = null;
+let appContainer: ShadowDOM | null = null;
+
+interface ShadowDOM extends HTMLElement {
+  shadowRoot: ShadowRoot;
+}
+
+class AppContainer extends HTMLElement {
+  constructor() {
+    super();
+  }
+}
+
+customElements.define(APP_CONTAINER_ID, AppContainer);
 
 class SettingsMenu extends Module {
   constructor() {
@@ -12,27 +27,21 @@ class SettingsMenu extends Module {
   }
 
   load(): void {
-    if (document.getElementById(APP_CONTAINER_ID) != null) {
+    if (appContainer != null) {
       return;
     }
 
-    appContainer = document.createElement('div');
-    appContainer.setAttribute('id', APP_CONTAINER_ID);
-    document.body.appendChild(appContainer);
-    render(h(App, {}), appContainer);
+    appContainer = document.createElement(APP_CONTAINER_ID) as ShadowDOM;
+    const shadowRoot = appContainer.attachShadow({ mode: 'closed' });
 
-    this.handleResize();
-    window.addEventListener('resize', this.handleResize.bind(this));
-  }
-
-  handleResize() {
-    if (appContainer == null) {
-      return;
+    for (const style of shadowDomStyles) {
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(style);
+      shadowRoot.adoptedStyleSheets.push(sheet);
     }
 
-    const { innerWidth, innerHeight } = window;
-    appContainer.style.width = `${innerWidth}px`;
-    appContainer.style.height = `${innerHeight}px`;
+    document.documentElement.appendChild(appContainer);
+    createRoot(shadowRoot).render(React.createElement(App));
   }
 }
 

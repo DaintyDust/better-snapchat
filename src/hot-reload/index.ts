@@ -68,11 +68,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       files: ['build/script.js'],
       injectImmediately: true,
     });
-
-    chrome.scripting.insertCSS({
-      target: { tabId, frameIds: [frameId] },
-      files: ['build/script.css'],
-    });
   });
 
   async function reloadTabs() {

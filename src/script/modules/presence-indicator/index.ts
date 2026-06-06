@@ -1,7 +1,7 @@
 import settings from '@lib/settings';
 import Module from '@lib/module';
 import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
-import styles from './index.module.css';
+import styles from './index.module.scss';
 
 const store = getSnapchatStore();
 

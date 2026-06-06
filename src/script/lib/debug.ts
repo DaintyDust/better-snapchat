@@ -1,5 +1,3 @@
-const PREFIX = '[Better-Snap]';
-
 let iframeContentWindow: any | null = null;
 
 export function getIframeContentWindow() {
@@ -14,17 +12,43 @@ export function getIframeContentWindow() {
   return iframeContentWindow;
 }
 
+const LEVEL_COLORS = {
+  log: '#a6d189',
+  info: '#89b4fa',
+  warn: '#e5c890',
+  error: '#e78284',
+  debug: '#eebebe',
+};
+
 export function logInfo(...args: unknown[]) {
   const { console } = getIframeContentWindow();
-  console.log(`%c${PREFIX}`, 'color: #3b5bdb', ...args);
+  console.log(
+    `%c LOG %c %c Better-Snap `,
+    `background: ${LEVEL_COLORS['log']}; color: black; font-weight: bold; border-radius: 5px;`,
+    '',
+    `background: #3b5bdb; color: white; font-weight: bold; border-radius: 5px;`,
+    ...args,
+  );
 }
 
 export function logWarn(...args: unknown[]) {
   const { console } = getIframeContentWindow();
-  console.warn(PREFIX, ...args);
+  console.warn(
+    `%c WARN %c %c Better-Snap `,
+    `background: ${LEVEL_COLORS['warn']}; color: black; font-weight: bold; border-radius: 5px;`,
+    '',
+    `background: #3b5bdb; color: white; font-weight: bold; border-radius: 5px;`,
+    ...args,
+  );
 }
 
 export function logError(...args: unknown[]) {
   const { console } = getIframeContentWindow();
-  console.error(PREFIX, ...args);
+  console.error(
+    `%c ERROR %c %c Better-Snap `,
+    `background: ${LEVEL_COLORS['error']}; color: black; font-weight: bold; border-radius: 5px;`,
+    '',
+    `background: #3b5bdb; color: white; font-weight: bold; border-radius: 5px;`,
+    ...args,
+  );
 }

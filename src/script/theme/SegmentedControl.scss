@@ -1,0 +1,4 @@
+.root {
+  border: 1px solid var(--mantine-color-dark-4);
+  border-radius: calc(var(--sc-radius, var(--mantine-radius-default)) + calc(0.25rem * var(--mantine-scale)));
+}

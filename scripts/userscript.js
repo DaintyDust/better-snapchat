@@ -1,12 +1,13 @@
 const ESBuild = require('esbuild');
 const EsbuildPluginImportGlob = require('esbuild-plugin-import-glob');
-const CSSModulesPlugin = require('esbuild-css-modules-plugin');
 const package = require('../package.json');
 const alias = require('esbuild-plugin-alias');
 const path = require('path');
 const fs = require('fs/promises');
+const { sassPlugin } = require('esbuild-sass-plugin');
+const { transform } = require('lightningcss');
 
-const USER_SCRIPT_METADATA = (scriptTextContent, styleTextContent) => `
+const USER_SCRIPT_METADATA = (scriptTextContent) => `
 // ==UserScript==
 // @name         ${package.name}
 // @version      ${package.version}
@@ -26,12 +27,6 @@ GM_addElement('script', {
   type: 'text/javascript',
   textContent: ${JSON.stringify(scriptTextContent)}
 });
-
-GM_addElement('link', {
-  rel: 'stylesheet',
-  type: 'text/css',
-  href: 'data:text/css;charset=utf-8,' + encodeURIComponent(${JSON.stringify(styleTextContent)})
-});
 `;
 
 (async () => {
@@ -48,10 +43,20 @@ GM_addElement('link', {
     logLevel: 'info',
     plugins: [
       EsbuildPluginImportGlob.default(),
-      CSSModulesPlugin(),
+      sassPlugin({
+        type: 'css-text',
+        filter: /\.(scss|css)$/,
+        transform: (code, _, filePath) => {
+          const { code: transformedCode } = transform({
+            code: Buffer.from(code),
+            filename: filePath,
+            minify: true,
+          });
+
+          return transformedCode.toString();
+        },
+      }),
       alias({
-        react: require.resolve('preact/compat'),
-        'react-dom': require.resolve('preact/compat'),
         '@': path.resolve(__dirname, '../src'),
         '@hooks': path.resolve(__dirname, '../src/script/hooks'),
         '@lib': path.resolve(__dirname, '../src/script/lib'),
@@ -63,10 +68,6 @@ GM_addElement('link', {
     define: { 'process.env.VERSION': JSON.stringify(package.version) },
   });
 
-  const [scriptTextContent, styleTextContent] = await Promise.all([
-    fs.readFile(`./public/build/script.js`, 'utf-8'),
-    fs.readFile(`./public/build/script.css`, 'utf-8'),
-  ]);
-
-  await fs.writeFile('./public/build/userscript.js', USER_SCRIPT_METADATA(scriptTextContent, styleTextContent));
+  const scriptTextContent = await fs.readFile(`./public/build/script.js`, 'utf-8');
+  await fs.writeFile('./public/build/userscript.js', USER_SCRIPT_METADATA(scriptTextContent));
 })();

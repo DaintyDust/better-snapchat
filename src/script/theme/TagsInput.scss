@@ -16,6 +16,7 @@
   animation-fill-mode: forwards;
 }
 
+.option:hover,
 .optionHover:hover {
   background-color: var(--mantine-primary-color-filled);
   font-weight: 500;
@@ -33,22 +34,24 @@
   max-width: 500px;
   width: fit-content;
   padding: var(--mantine-spacing-xs) 4px;
-  padding-inline-end: 0px;
+  padding-inline-end: 0;
   overflow-y: auto;
   max-height: calc(12.5rem * var(--mantine-scale));
+}
 
-  &::-webkit-scrollbar {
-    width: 8px;
-    background: unset;
-    border: unset;
-  }
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--mantine-color-gray-light);
-    border-radius: 8px;
-  }
+.dropdown::-webkit-scrollbar {
+  width: 8px;
+  background: unset;
+  border: unset;
+}
+
+.dropdown::-webkit-scrollbar-button {
+  display: none;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background-color: var(--mantine-color-gray-light);
+  border-radius: 8px;
 }
 
 .dropdownText {

@@ -1,36 +1,31 @@
-import Patch from '@lib/patch';
+import { registerPatch } from '@lib/patch';
 
-class UserMediaPermissions extends Patch {
-  constructor() {
-    super('User Media Permissions');
+registerPatch('User Media Permissions', () => {
+  if (!('permissions' in navigator) || typeof navigator.permissions.query !== 'function' || !navigator.userAgent.toLowerCase().includes('firefox')) {
+    return;
   }
 
-  patch() {
-    if (!('permissions' in navigator) || typeof navigator.permissions.query !== 'function' || !navigator.userAgent.toLowerCase().includes('firefox')) {
-      return;
-    }
+  navigator.getUserMedia = navigator.getUserMedia ?? navigator.webkitGetUserMedia ?? navigator.mozGetUserMedia;
 
-    navigator.getUserMedia = navigator.getUserMedia ?? navigator.webkitGetUserMedia ?? navigator.mozGetUserMedia;
-    function userMediaPromise() {
-      return new Promise((resolve) => {
-        navigator.getUserMedia(
-          { audio: true, video: true },
-          () => resolve({ state: 'granted' }),
-          () => resolve({ state: 'denied' }),
-        );
-      });
-    }
-
-    navigator.permissions.query = new Proxy(navigator.permissions.query, {
-      apply: async (target, thisArg, args) => {
-        const [permission] = args;
-        if (permission.name === 'camera' || permission.name === 'microphone') {
-          return userMediaPromise();
-        }
-        return target.apply(thisArg, args as any);
-      },
+  function userMediaPromise() {
+    return new Promise((resolve) => {
+      navigator.getUserMedia(
+        { audio: true, video: true },
+        () => resolve({ state: 'granted' }),
+        () => resolve({ state: 'denied' }),
+      );
     });
   }
-}
 
-export default new UserMediaPermissions();
+  navigator.permissions.query = new Proxy(navigator.permissions.query, {
+    apply: async (target, thisArg, args) => {
+      const [permission] = args;
+
+      if (permission.name === 'camera' || permission.name === 'microphone') {
+        return userMediaPromise();
+      }
+
+      return Reflect.apply(target, thisArg, args);
+    },
+  });
+});
