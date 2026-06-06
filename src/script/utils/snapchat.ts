@@ -4,6 +4,13 @@ type WebpackRequire = <T>(id: string) => T;
 
 let snapchatWebpackRequire: WebpackRequire | null = null;
 
+/**
+ * Obtain Snapchat's internal webpack `require` function by injecting a temporary module into the global webpack chunk array.
+ *
+ * Subsequent calls return the cached `require` if already discovered.
+ *
+ * @returns The webpack `require` function if successfully captured, `null` otherwise.
+ */
 export function getSnapchatWebpackRequire(): WebpackRequire | null {
   if (snapchatWebpackRequire != null) {
     return snapchatWebpackRequire;
@@ -89,6 +96,11 @@ export function getCofStore() {
   return cofStore;
 }
 
+/**
+ * Locate the module value that exposes Snapchat provisioning constants.
+ *
+ * @returns The first module value whose `SNAPCHAT_WEB_APP` property is not null, or `null` if the webpack require or matching module cannot be found.
+ */
 export function getProvConsts() {
   const webpackRequire = getSnapchatWebpackRequire();
   const someModuleId = getSnapchatWebpackModuleId((module) => module.includes('SNAPCHAT_WEB_APP'));

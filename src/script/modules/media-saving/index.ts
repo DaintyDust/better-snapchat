@@ -4,6 +4,11 @@ import styles from './index.scss';
 
 let attached = false;
 
+/**
+ * Prevents other listeners from receiving the contextmenu event.
+ *
+ * @param event - The `MouseEvent` whose propagation will be stopped
+ */
 function preventContextMenu(event: MouseEvent) {
   event.stopImmediatePropagation();
 }

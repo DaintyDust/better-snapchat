@@ -70,6 +70,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   });
 
+  /**
+   * Reloads any open Snapchat web pages that match the extension's URL patterns.
+   *
+   * Queries for tabs matching `https://web.snapchat.com/*` and `https://www.snapchat.com/web/*`
+   * and issues a reload for each tab that has a valid tab id.
+   *
+   * @returns Void.
+   */
   async function reloadTabs() {
     const tabs = await Promise.all([
       chrome.tabs.query({ url: 'https://web.snapchat.com/*' }),

@@ -7,6 +7,11 @@ registerPatch('User Media Permissions', () => {
 
   navigator.getUserMedia = navigator.getUserMedia ?? navigator.webkitGetUserMedia ?? navigator.mozGetUserMedia;
 
+  /**
+   * Requests audio and video via `getUserMedia` and produces a permission-state object.
+   *
+   * @returns An object with `state` set to `'granted'` if media access was obtained, `'denied'` otherwise.
+   */
   function userMediaPromise() {
     return new Promise((resolve) => {
       navigator.getUserMedia(

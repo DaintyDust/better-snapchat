@@ -47,6 +47,11 @@ const mantineTheme = createTheme({
   },
 });
 
+/**
+ * Determines the current operating system color scheme preference.
+ *
+ * @returns `dark` when the user prefers a dark color scheme, `light` otherwise.
+ */
 function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
@@ -77,6 +82,17 @@ const colorModeManager = {
   clear: () => {},
 } satisfies MantineColorSchemeManager;
 
+/**
+ * Provides Mantine theming and color-scheme management to its descendants.
+ *
+ * Renders a MantineProvider configured with the application's theme, a custom
+ * color scheme manager (reads app theme from the snapchat store and maps
+ * `'system'` to the OS preference), and a root element for CSS variables.
+ *
+ * @param children - React nodes to be rendered inside the themed provider
+ * @param props - Additional props forwarded to MantineProvider
+ * @returns The MantineProvider element that wraps the application content
+ */
 export default function ThemeProvider({ children, ...props }: React.PropsWithChildren<React.ComponentProps<typeof MantineProvider>>) {
   const ref = React.useRef<HTMLDivElement>(null);
   return (

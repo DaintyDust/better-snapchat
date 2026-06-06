@@ -16,6 +16,15 @@ import useSettingState from '@hooks/useSettingState';
 const { default: settingsDefault } = migrations;
 const settings = settingsDefault.map(({ default: setting }: { default: SettingModule }) => setting);
 
+/**
+ * Renders the modal body showing settings filtered by the provided search query.
+ *
+ * Renders an empty-state message when no matches are found, the list of matching
+ * setting components, and a "Reset Settings" action when the search query is empty.
+ *
+ * @param search - Search query used to filter settings by name and description
+ * @returns The modal body as a React element
+ */
 function ModalSettings({ search }: { search: string }) {
   const fuse = React.useMemo(() => new Fuse(settings, { keys: ['name', 'description'] }), []);
 
@@ -43,6 +52,14 @@ function ModalSettings({ search }: { search: string }) {
   );
 }
 
+/**
+ * Renders the header for the settings modal, including a logo link, a focused search input, and a close button.
+ *
+ * @param onClose - Callback invoked when the close button is clicked
+ * @param search - Current search query shown in the input
+ * @param setSearch - Function to update the search query
+ * @returns The header JSX element for the settings modal
+ */
 function ModalHeader({ onClose, search, setSearch }: { onClose: () => void; search: string; setSearch: (value: string) => void }) {
   return (
     <div className="modalSection">
@@ -67,6 +84,13 @@ function ModalHeader({ onClose, search, setSearch }: { onClose: () => void; sear
   );
 }
 
+/**
+ * Render the settings modal containing a searchable settings list, header controls, and footer actions.
+ *
+ * @param isOpen - Whether the modal is currently open
+ * @param onClose - Callback invoked to close the modal
+ * @returns The Modal React element that hosts the header (search and close), the settings content, and footer links (Discord and release/version)
+ */
 function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [search, setSearch] = React.useState('');
   return (
@@ -98,6 +122,13 @@ const MemoSettingsModal = React.memo(SettingsModal, (prevProps, nextProps) => {
   return prevProps.isOpen === nextProps.isOpen && prevProps.onClose === nextProps.onClose;
 });
 
+/**
+ * Render the settings menu, its trigger button (when enabled), and the settings modal.
+ *
+ * Registers a global Shift+Q keyboard shortcut to toggle the modal, ignoring key presses when focus is on inputs, textareas, or contentEditable elements.
+ *
+ * @returns A React element containing the conditional settings button and the settings modal.
+ */
 function SettingsMenu() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const [setting] = useSettingState(SettingIds.SETTINGS_BUTTON_LAYOUT);

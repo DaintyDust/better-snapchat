@@ -39,6 +39,11 @@ registerPatch('User Agents', () => {
   if ('permissions' in navigator && typeof navigator.permissions.query === 'function') {
     navigator.getUserMedia = navigator.getUserMedia ?? navigator.webkitGetUserMedia ?? navigator.mozGetUserMedia;
 
+    /**
+     * Requests camera and microphone access and returns the resulting permission state.
+     *
+     * @returns An object with `state: 'granted'` if `getUserMedia` succeeded, `state: 'denied'` if it failed; the promise always resolves and never rejects.
+     */
     function userMediaPromise() {
       return new Promise((resolve) => {
         navigator.getUserMedia(

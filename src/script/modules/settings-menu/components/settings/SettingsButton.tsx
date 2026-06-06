@@ -11,6 +11,13 @@ const DEFAULT_DESCRIPTION = 'Show Settings button on the right side of the scree
 const HIDDEN_NAME = 'Hidden';
 const HIDDEN_DESCRIPTION = 'Hide Settings button completely. (Shift + Q to Open)';
 
+/**
+ * Renders a radio-group setting that lets the user choose the Settings button layout.
+ *
+ * Displays options for "Right" and "Hidden" and updates the `SETTINGS_BUTTON_LAYOUT` setting when changed.
+ *
+ * @returns The radio-group React element for the Settings Button Layout setting.
+ */
 function _SettingsButtonLayout() {
   const [settingButtonLayout, setSettingButtonLayout] = useSettingState('SETTINGS_BUTTON_LAYOUT');
   return (

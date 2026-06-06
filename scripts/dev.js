@@ -52,6 +52,11 @@ const manifest = {
   },
 };
 
+/**
+ * Builds the extension assets and writes the manifest to ./public/manifest.json.
+ *
+ * Performs bundling for the extension entry points and emits compiled files into ./public/build/ while concurrently writing the generated manifest file to ./public/manifest.json.
+ */
 async function buildExtension() {
   await Promise.all([
     ESBuild.build({

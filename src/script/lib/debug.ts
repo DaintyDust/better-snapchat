@@ -1,5 +1,14 @@
 let iframeContentWindow: any | null = null;
 
+/**
+ * Obtain and cache a hidden iframe's Window object for isolated DOM/console access.
+ *
+ * On first call this creates a display:none iframe, appends it to document.head (or documentElement)
+ * and caches its `contentWindow`. Subsequent calls return the cached Window object without
+ * creating additional iframes.
+ *
+ * @returns The iframe's `contentWindow` (the iframe's Window) or `null` if it cannot be retrieved.
+ */
 export function getIframeContentWindow() {
   if (iframeContentWindow != null) {
     return iframeContentWindow;
@@ -20,6 +29,11 @@ const LEVEL_COLORS = {
   debug: '#eebebe',
 };
 
+/**
+ * Logs an informational message to the hidden iframe's console with styled "LOG" and "Better-Snap" labels.
+ *
+ * @param args - Values to be logged after the styled labels
+ */
 export function logInfo(...args: unknown[]) {
   const { console } = getIframeContentWindow();
   console.log(
@@ -31,6 +45,11 @@ export function logInfo(...args: unknown[]) {
   );
 }
 
+/**
+ * Logs a styled warning message to the console with a "WARN" label and a "Better-Snap" badge.
+ *
+ * @param args - Additional values to append after the styled labels in the console output
+ */
 export function logWarn(...args: unknown[]) {
   const { console } = getIframeContentWindow();
   console.warn(
@@ -42,6 +61,11 @@ export function logWarn(...args: unknown[]) {
   );
 }
 
+/**
+ * Logs an error-level message to the console with styled "ERROR" and "Better-Snap" labels.
+ *
+ * @param args - Values to append after the styled labels in the console output
+ */
 export function logError(...args: unknown[]) {
   const { console } = getIframeContentWindow();
   console.error(
