@@ -1,24 +1,31 @@
-import Patch from '@lib/patch';
+import { registerPatch } from '@lib/patch';
 import settings from '@lib/settings';
 
-class CrossTabBroadcastChannel extends Patch {
-  constructor() {
-    super('Cross-Tab Broadcast Channel');
-  }
+registerPatch('Cross Tab BroadcastChannel', () => {
+  const CROSS_TAB_BROADCAST_CHANNEL = 'cross_tab';
+  const oldBroadcastChannel = window.BroadcastChannel;
 
-  patch() {
-    window.BroadcastChannel = class PatchedBroadcastChannel extends window.BroadcastChannel {
-      addEventListener(type: string, listener: EventListener) {
-        return super.addEventListener(type, ((event: MessageEvent) => {
-          if (this.name === 'cross_tab' && settings.getSetting('ALLOW_CROSS_TAB') && event.data.type === 'CLAIM_ACTIVE') {
-            return;
-          }
+  window.BroadcastChannel = class extends oldBroadcastChannel {
+    constructor(name: string) {
+      super(name);
 
-          listener(event);
-        }) as EventListener);
+      if (name === CROSS_TAB_BROADCAST_CHANNEL) {
+        window.BroadcastChannel = oldBroadcastChannel;
       }
-    };
-  }
-}
+    }
 
-export default new CrossTabBroadcastChannel();
+    addEventListener(type: string, listener: EventListener) {
+      if (this.name !== CROSS_TAB_BROADCAST_CHANNEL) {
+        return super.addEventListener(type, listener);
+      }
+
+      return super.addEventListener(type, ((event: MessageEvent) => {
+        if (settings.getSetting('ALLOW_CROSS_TAB') && event.data?.type === 'CLAIM_ACTIVE') {
+          return;
+        }
+
+        listener(event);
+      }) as EventListener);
+    }
+  };
+});

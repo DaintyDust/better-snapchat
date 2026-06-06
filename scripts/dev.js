@@ -1,6 +1,5 @@
 const ESBuild = require('esbuild');
 const EsbuildPluginImportGlob = require('esbuild-plugin-import-glob');
-const CSSModulesPlugin = require('esbuild-css-modules-plugin');
 const package = require('../package.json');
 const fs = require('fs/promises');
 const alias = require('esbuild-plugin-alias');
@@ -8,6 +7,8 @@ const path = require('path');
 const dotenv = require('dotenv');
 const chokidar = require('chokidar');
 const { WebSocketServer } = require('ws');
+const { sassPlugin } = require('esbuild-sass-plugin');
+const { transform } = require('lightningcss');
 
 dotenv.config();
 
@@ -22,13 +23,13 @@ const manifest = {
     96: 'logo96.png',
     128: 'logo128.png',
   },
-  host_permissions: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*', 'https://ntfy.sh/*'],
+  host_permissions: ['https://*.snapchat.com/*', 'https://ntfy.sh/*'],
   background: {
     service_worker: './build/hot-reload.js'
   },
   content_scripts: [
     {
-      matches: ['https://web.snapchat.com/*', 'https://*.snapchat.com/*'],
+      matches: ['https://*.snapchat.com/*'],
       js: ['./build/messenger.js'],
       run_at: 'document_start',
       world: 'ISOLATED'
@@ -64,10 +65,20 @@ async function buildExtension() {
       logLevel: 'info',
       plugins: [
         EsbuildPluginImportGlob.default(),
-        CSSModulesPlugin(),
+        sassPlugin({
+          type: 'css-text',
+          filter: /\.(scss|css)$/,
+          transform: (code, _, filePath) => {
+            const { code: transformedCode } = transform({
+              code: Buffer.from(code),
+              filename: filePath,
+              minify: true,
+            });
+
+            return transformedCode.toString();
+          },
+        }),
         alias({
-          react: require.resolve('preact/compat'),
-          'react-dom': require.resolve('preact/compat'),
           '@': path.resolve(__dirname, '../src'),
           '@hooks': path.resolve(__dirname, '../src/script/hooks'),
           '@lib': path.resolve(__dirname, '../src/script/lib'),

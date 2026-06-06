@@ -1,4 +1,4 @@
-import { logInfo } from '@lib/debug';
+import { v4 as uuidv4 } from 'uuid';
 
 type WebpackRequire = <T>(id: string) => T;
 
@@ -9,18 +9,15 @@ export function getSnapchatWebpackRequire(): WebpackRequire | null {
     return snapchatWebpackRequire;
   }
 
-  if (!window.webpackChunk_snapchat_web_calling_app) {
-    return null;
-  }
-
+  const injectFnName = uuidv4().replace(/-/g, '');
   window.webpackChunk_snapchat_web_calling_app.push([
-    ['injectBetterSnapchat'],
+    [injectFnName],
     {
-      injectBetterSnapchat: (a: any, b: any, require: WebpackRequire) => {
+      [injectFnName]: (a: any, b: any, require: WebpackRequire) => {
         snapchatWebpackRequire = require;
       },
     },
-    (require: WebpackRequire) => require('injectBetterSnapchat'),
+    (require: WebpackRequire) => require(injectFnName),
   ]);
 
   return snapchatWebpackRequire;
@@ -100,9 +97,7 @@ export function getProvConsts() {
   }
 
   const module = webpackRequire(someModuleId) as Record<string, any>;
-  const provConsts = Object.values(module).find(
-    (value) => value.SNAPCHAT_WEB_APP != null && value.SNAPCHAT_WEB_APP != null,
-  );
+  const provConsts = Object.values(module).find((value) => value.SNAPCHAT_WEB_APP != null && value.SNAPCHAT_WEB_APP != null);
 
   return provConsts;
 }

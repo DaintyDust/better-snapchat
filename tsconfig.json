@@ -5,24 +5,13 @@
     "module": "commonjs",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@hooks/*": [
-        "src/script/hooks/*"
-      ],
-      "@lib/*": [
-        "src/script/lib/*"
-      ],
-      "@app-types/*": [
-        "src/types/*"
-      ],
-      "@utils/*": [
-        "src/script/utils/*"
-      ],
-      "@modules/*": [
-        "src/script/modules/*"
-      ]
+      "@/*": ["src/*"],
+      "@hooks/*": ["src/script/hooks/*"],
+      "@lib/*": ["src/script/lib/*"],
+      "@app-types/*": ["src/types/*"],
+      "@utils/*": ["src/script/utils/*"],
+      "@modules/*": ["src/script/modules/*"],
+      "@theme/*": ["src/script/theme/*"]
     },
     "ignoreDeprecations": "6.0",
     "esModuleInterop": true,

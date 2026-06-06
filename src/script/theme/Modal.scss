@@ -1,3 +1,22 @@
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
+.settingsButton {
+  position: fixed;
+  top: 50%;
+  right: 0px;
+  z-index: 9999;
+
+  &:active {
+    scale: 0.95;
+  }
+
+  transition-property: scale;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .modalSettings {
   display: flex;
   flex-direction: column;
@@ -13,7 +32,7 @@
 }
 
 .modalSettings::-webkit-scrollbar-thumb {
-  background-color: var(--mantine-color-gray-light);
+  background-color: rgba(134, 142, 150, 0.15); //var(--mantine-color-gray-light);
   border-radius: 8px;
 }
 
@@ -56,6 +75,12 @@
 
 .footerText {
   margin: 0 0 0 auto;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .emptySettings {

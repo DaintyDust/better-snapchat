@@ -1,7 +1,5 @@
 dist/*
 node_modules/
-.vscode/
-.github/
 
 public/build/
 public/manifest.json
@@ -10,5 +8,7 @@ public/manifest.json
 
 .env
 .DS_Store
-*.bat
-*.ps1
+*.backup*
+*_New*
+
+/src/script/modules/disabled
