@@ -48,7 +48,7 @@ You can install **BetterSnap** via the [User-Script](https://better-snapchat.vas
 
 ## How to Compile
 
-1. Clone or fork the respository `git@github.com:daintydust/better-snapchat.git`.
+1. Clone or fork the repository `git@github.com:daintydust/better-snapchat.git`.
 2. Install dependencies, typically by `npm install` in the root of the directory.
 3. Run `npm run build` to build the extension.
 4. The compiled extension will be available in the `/public` directory.
@@ -59,7 +59,7 @@ You can install **BetterSnap** via the [User-Script](https://better-snapchat.vas
 
 ## How to Contribute
 
-1. Clone or fork the respository `git@github.com:daintydust/better-snapchat.git`.
+1. Clone or fork the repository `git@github.com:daintydust/better-snapchat.git`.
 2. Install dependencies, typically by `npm install` in the root of the directory.
 3. Run `npm start` to run the development server.
 4. Navigate to `chrome://extensions/` and enable developer-mode (top-right).
