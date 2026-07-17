@@ -155,7 +155,11 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
   const currentlyPresentUsers = new Set<string>();
 
   // Process all conversations
-  for (const [conversationId, { peekingParticipants, typingParticipants, presentParticipants }] of activeConversationInfo.entries()) {
+  for (const [conversationId, conversationInfo] of activeConversationInfo.entries()) {
+    const { presentParticipants } = conversationInfo;
+    // Snapchat doesn't always include these fields in the payload (e.g. when nobody is peeking/typing)
+    const peekingParticipants: string[] = Array.isArray(conversationInfo.peekingParticipants) ? conversationInfo.peekingParticipants : [];
+    const typingParticipants: any[] = Array.isArray(conversationInfo.typingParticipants) ? conversationInfo.typingParticipants : [];
     const conversation = getConversation(conversationId)?.conversation;
     const conversationTitle = conversation?.title ?? 'your Chat';
 
