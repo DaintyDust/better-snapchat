@@ -1,4 +1,3 @@
-import { getSnapchatStore } from '../utils/snapchat';
 export const SettingIds = {
   USER_ID: 'USER_ID',
   USER_INFO: 'USER_INFO',

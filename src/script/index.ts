@@ -6,6 +6,11 @@ import { logInfo, logWarn } from './lib/debug';
     return;
   }
 
+  const style = document.createElement('style');
+  style.id = 'bs-global-style';
+  style.textContent = 'body { font-family: var(--sigFontFamilyPrimary); }';
+  (document.head || document.documentElement).appendChild(style);
+
   if (hostname === 'www.snapchat.com' && !pathname.startsWith('/web')) {
     return;
   }
@@ -13,7 +18,7 @@ import { logInfo, logWarn } from './lib/debug';
   logInfo(`BetterSnap v${process.env.VERSION}`);
 
   if (document.readyState === 'complete') {
-    logWarn('BetterChat did not inject immediately, page was already loaded.');
+    logWarn('BetterSnap did not inject immediately, page was already loaded.');
     // @ts-ignore glob import
     import('./modules/**/index.ts');
   } else {

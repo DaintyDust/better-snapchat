@@ -2,7 +2,6 @@ import React from 'react';
 import { defaultSettingValues, SettingId } from '@lib/constants';
 import settings from '@lib/settings';
 
-// eslint-disable-next-line no-unused-vars
 export default function useSettingState<T extends SettingId>(key: T): [(typeof defaultSettingValues)[T], (newValue: (typeof defaultSettingValues)[T]) => void] {
   const [value, setValue] = React.useState<(typeof defaultSettingValues)[T]>(() => {
     const initialValue = settings.getSetting(key);

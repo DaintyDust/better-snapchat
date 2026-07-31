@@ -21,6 +21,7 @@ export default [
   },
   ...compat.extends('plugin:react/recommended', 'prettier'),
   {
+    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     plugins: {
       react,
       '@typescript-eslint': typescriptEslint,
@@ -50,6 +51,12 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
+      },
+    },
+
+    settings: {
+      react: {
+        version: 'detect',
       },
     },
   },

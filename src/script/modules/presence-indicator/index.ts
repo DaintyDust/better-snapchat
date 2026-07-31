@@ -1,7 +1,7 @@
 import settings from '@lib/settings';
 import Module from '@lib/module';
-import { getConversation, getSnapchatPublicUser, getSnapchatStore } from '@utils/snapchat';
-import styles from './index.module.scss';
+import { getSnapchatStore } from '@utils/snapchat';
+import styles from './index.scss';
 
 const store = getSnapchatStore();
 
@@ -9,6 +9,7 @@ let oldOnActiveConversationInfoUpdated: any = null;
 let newOnActiveConversationInfoUpdated: any = null;
 
 const currentlyPresentUsers = new Set<string>();
+let styleElement: HTMLStyleElement | null = null;
 
 function getConversationContainerElementFromId(conversationId: string) {
   const element = document.getElementById(`title-${conversationId}`);
@@ -23,14 +24,14 @@ function addPresenceIndicator(container: Element, conversationId: string, userId
   }
 
   // Check if indicator already exists for this user
-  const existingIndicator = container.querySelector(`.${styles.presenceDot}[data-user-id="${userId}"]`);
+  const existingIndicator = container.querySelector(`.presenceDot[data-user-id="${userId}"]`);
   if (existingIndicator) {
     return;
   }
 
   // Create the presence dot
   const presenceDot = document.createElement('div');
-  presenceDot.className = styles.presenceDot;
+  presenceDot.className = 'presenceDot';
   presenceDot.setAttribute('data-user-id', userId);
   presenceDot.setAttribute('data-conversation-id', conversationId);
   presenceDot.setAttribute('aria-label', 'User is present');
@@ -76,9 +77,9 @@ function addPresenceIndicator(container: Element, conversationId: string, userId
 function removePresenceIndicator(conversationId: string, userId: string) {
   const container = getConversationContainerElementFromId(conversationId);
   if (container) {
-    const indicator = container.querySelector(`.${styles.presenceDot}[data-user-id="${userId}"]`);
+    const indicator = container.querySelector(`.presenceDot[data-user-id="${userId}"]`);
     if (indicator) {
-      indicator.classList.add(styles.fadeOut);
+      indicator.classList.add('fadeOut');
       setTimeout(() => {
         indicator.remove();
       }, 300); // Match fade out animation duration
@@ -93,7 +94,7 @@ function updatePresenceIndicators(conversationId: string, presentUserIds: string
   }
 
   // Get all current indicators for this conversation
-  const existingIndicators = container.querySelectorAll(`.${styles.presenceDot}[data-conversation-id="${conversationId}"]`);
+  const existingIndicators = container.querySelectorAll(`.presenceDot[data-conversation-id="${conversationId}"]`);
   const existingUserIds = new Set<string>();
 
   existingIndicators.forEach((indicator) => {
@@ -198,6 +199,17 @@ class PresenceIndicator extends Module {
       const presenceIndicatorEnabled = settings.getSetting('PRESENCE_INDICATOR');
       const changedValues: any = {};
 
+      if (presenceIndicatorEnabled && styleElement == null) {
+        styleElement = document.createElement('style');
+        styleElement.textContent = styles;
+        document.head.appendChild(styleElement);
+      }
+
+      if (!presenceIndicatorEnabled && styleElement != null) {
+        styleElement.remove();
+        styleElement = null;
+      }
+
       if (presenceIndicatorEnabled && presenceClient.onActiveConversationInfoUpdated !== newOnActiveConversationInfoUpdated) {
         oldOnActiveConversationInfoUpdated = presenceClient.onActiveConversationInfoUpdated;
 
@@ -218,7 +230,7 @@ class PresenceIndicator extends Module {
         currentlyPresentUsers.clear();
 
         // Clear all indicators
-        document.querySelectorAll(`.${styles.presenceDot}`).forEach((el) => el.remove());
+        document.querySelectorAll('.presenceDot').forEach((el) => el.remove());
       }
 
       if (Object.keys(changedValues).length === 0) {

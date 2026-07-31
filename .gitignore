@@ -5,7 +5,7 @@ public/build/
 public/manifest.json
 
 *.zip
-
+.wakatime-project
 .env
 .DS_Store
 *.backup*

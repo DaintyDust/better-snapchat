@@ -6,7 +6,7 @@
     "start": "rm -rf ./public/build/ && node ./scripts/dev.js",
     "build": "npm run build:chrome",
     "manifest-lint": "addons-linter public/",
-    "lint": "eslint --ignore-pattern \"src/**/*.{ts,tsx}\" && prettier --check \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint && prettier --check \"src/**/*.{ts,tsx}\"",
     "lint:fix": "prettier --write --end-of-line auto \"src/**/*.{ts,tsx}\"",
     "build:chrome": "rm -rf ./public/build/ && node ./scripts/chrome.js",
     "build:firefox": "rm -rf ./public/build/ && node ./scripts/firefox.js",
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.29.0",
-    "@types/chrome": "^0.0.326",
+    "@types/chrome": "^0.2.0",
     "@types/lodash.throttle": "^4.1.9",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.0.1",

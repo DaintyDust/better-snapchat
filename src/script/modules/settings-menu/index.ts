@@ -40,7 +40,7 @@ class SettingsMenu extends Module {
       shadowRoot.adoptedStyleSheets.push(sheet);
     }
 
-    document.documentElement.appendChild(appContainer);
+    document.body.appendChild(appContainer);
     createRoot(shadowRoot).render(React.createElement(App));
   }
 }

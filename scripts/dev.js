@@ -25,30 +25,25 @@ const manifest = {
   },
   host_permissions: ['https://*.snapchat.com/*', 'https://ntfy.sh/*'],
   background: {
-    service_worker: './build/hot-reload.js'
+    service_worker: './build/hot-reload.js',
   },
   content_scripts: [
     {
       matches: ['https://*.snapchat.com/*'],
       js: ['./build/messenger.js'],
       run_at: 'document_start',
-      world: 'ISOLATED'
-    }
+      world: 'ISOLATED',
+    },
   ],
-  permissions: [
-    'webNavigation',
-    'scripting',
-    'tabs',
-    'activeTab'
-  ],
+  permissions: ['webNavigation', 'scripting', 'tabs', 'activeTab'],
   web_accessible_resources: [
     {
       resources: ['./build/*'],
-      matches: ['https://*.snapchat.com/*']
-    }
+      matches: ['https://*.snapchat.com/*'],
+    },
   ],
   content_security_policy: {
-    extension_pages: "script-src 'self'; object-src 'self'; connect-src https://ntfy.sh ws://localhost:* 'self';"
+    extension_pages: "script-src 'self'; object-src 'self'; connect-src https://ntfy.sh ws://localhost:* 'self';",
   },
 };
 
@@ -77,14 +72,6 @@ async function buildExtension() {
 
             return transformedCode.toString();
           },
-        }),
-        alias({
-          '@': path.resolve(__dirname, '../src'),
-          '@hooks': path.resolve(__dirname, '../src/script/hooks'),
-          '@lib': path.resolve(__dirname, '../src/script/lib'),
-          '@app-types': path.resolve(__dirname, '../src/types'),
-          '@utils': path.resolve(__dirname, '../src/script/utils'),
-          '@modules': path.resolve(__dirname, '../src/script/modules'),
         }),
       ],
       define: {

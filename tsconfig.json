@@ -3,30 +3,23 @@
     "jsx": "react",
     "target": "es2019",
     "module": "commonjs",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@hooks/*": ["src/script/hooks/*"],
-      "@lib/*": ["src/script/lib/*"],
-      "@app-types/*": ["src/types/*"],
-      "@utils/*": ["src/script/utils/*"],
-      "@modules/*": ["src/script/modules/*"],
-      "@theme/*": ["src/script/theme/*"]
+      "@/*": ["./src/*"],
+      "@hooks/*": ["./src/script/hooks/*"],
+      "@lib/*": ["./src/script/lib/*"],
+      "@app-types/*": ["./src/types/*"],
+      "@utils/*": ["./src/script/utils/*"],
+      "@modules/*": ["./src/script/modules/*"],
+      "@devmodules/*": ["./src/script/devmodules/*"],
+      "@theme/*": ["./src/script/theme/*"]
     },
-    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/web-ext-types"
-    ],
+    "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"],
+    "types": ["chrome"],
     "noUncheckedIndexedAccess": true
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts"
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
