@@ -3,6 +3,7 @@
 ## BetterSnap
 
 <!--![Node CI badge](https://github.com/daintydust/better-snapchat/actions/workflows/node.js.yml/badge.svg)-->
+
 [![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/Sq4DEhPcZh?style=flat)](https://discord.gg/Sq4DEhPcZh)
 
 > [!IMPORTANT]  
@@ -23,8 +24,6 @@ Screenshot Freely, Save Media, Bypass Presence Detection and more!
 - 🔔 **Started Typing Notification** – Let others know when you are typing by push-notification.
 - 📂 **Unrestricted Files** – Enable sending media of any size.
 - 📸 **Upload Images as Snaps** – Uploaded images will be sent as snaps.
-- 🫣 **Peeking Notification** - Receive a notification when someone is peeking at a conversation.
-- 🔔 **Phone Notifications** - Send peeking notifications to your phone using NTFY.
 - 🔒 **Private Stories** – Interact with private stories on web.
 
 ✨ And more!
@@ -55,7 +54,6 @@ You can install **BetterSnap** via the [User-Script](https://better-snapchat.vas
 5. Alternatively, you can run `npm run package` to package the extension.
 
 > ⚠️ **Firefox Support** – Firefox is no longer officially supported. It sometimes works and sometimes doesn't. Use at your own risk.
->
 
 ## How to Contribute
 

@@ -147,18 +147,15 @@ const serializeUserConversationId = (userId: string, conversationId?: string): s
  * Handles active conversation info updates and tracks presence changes
  */
 async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any): Promise<void> {
-  const halfSwipeNotificationEnabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
   const presenceLoggingEnabled = settings.getSetting('PRESENCE_LOGGING');
 
-  const currentlyPeekingUsers = new Set<string>();
   const currentlyTypingOrIdleUsers = new Set<string>();
   const currentlyPresentUsers = new Set<string>();
 
   // Process all conversations
   for (const [conversationId, conversationInfo] of activeConversationInfo.entries()) {
     const { presentParticipants } = conversationInfo;
-    // Snapchat doesn't always include these fields in the payload (e.g. when nobody is peeking/typing)
-    const peekingParticipants: string[] = Array.isArray(conversationInfo.peekingParticipants) ? conversationInfo.peekingParticipants : [];
+    // Snapchat doesn't always include these fields in the payload (e.g. when nobody is typing)
     const typingParticipants: any[] = Array.isArray(conversationInfo.typingParticipants) ? conversationInfo.typingParticipants : [];
     const conversation = getConversation(conversationId)?.conversation;
     const conversationTitle = conversation?.title ?? 'your Chat';
@@ -169,35 +166,6 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
         const serializedId = serializeUserConversationId(userId, conversationId);
         currentlyPresentUsers.add(serializedId);
       }
-    }
-
-    // Handle peeking participants
-    for (const userId of peekingParticipants) {
-      const user = await getSnapchatPublicUser(userId);
-      if (!user) continue;
-      const serializedId = serializeUserConversationId(userId, conversationId);
-      const previousState = userPresenceMap.get(serializedId);
-
-      currentlyPeekingUsers.add(serializedId);
-
-      if (previousState === PresenceState.PEEKING) {
-        continue;
-      }
-
-      if (presenceLoggingEnabled) {
-        logPresenceEvent(user, PresenceState.PEEKING, conversationTitle);
-      }
-
-      if (halfSwipeNotificationEnabled) {
-        sendPresenceNotification({
-          user,
-          conversation,
-          conversationId,
-          presenceState: PresenceState.PEEKING,
-        });
-      }
-
-      userPresenceMap.set(serializedId, PresenceState.PEEKING);
     }
 
     // Handle typing/idle participants
@@ -231,31 +199,21 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
       for (const userId of presentParticipants) {
         const serializedId = serializeUserConversationId(userId, conversationId);
         const wasPreviouslyPresent = userPresenceTracking.get(serializedId);
-        const isPeeking = peekingParticipants.includes(userId);
         const isTyping = typingParticipants.some((tp: any) => tp.userId === userId);
 
-        // Only log "joined" if user is not actively typing or peeking and wasn't previously tracked
-        if (!wasPreviouslyPresent && !isPeeking && !isTyping) {
+        // Only log "joined" if user is not actively typing and wasn't previously tracked
+        if (!wasPreviouslyPresent && !isTyping) {
           userPresenceTracking.set(serializedId, true);
 
-          if (presenceLoggingEnabled || halfSwipeNotificationEnabled) {
+          if (presenceLoggingEnabled) {
             const user = await getSnapchatPublicUser(userId);
 
             if (presenceLoggingEnabled) {
               logPresenceEvent(user, PresenceState.JOINED, conversationTitle);
             }
-
-            if (halfSwipeNotificationEnabled) {
-              sendPresenceNotification({
-                user,
-                conversation,
-                conversationId,
-                presenceState: PresenceState.JOINED,
-              });
-            }
           }
-        } else if (!wasPreviouslyPresent && !isPeeking) {
-          // Mark as present if they're typing (but not peeking) to track for leave detection
+        } else if (!wasPreviouslyPresent) {
+          // Mark as present if they're typing to track for leave detection
           userPresenceTracking.set(serializedId, true);
         }
       }
@@ -265,14 +223,9 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
   // Handle users who left (were present but are no longer in presentParticipants)
   for (const [serializedId, wasPresent] of userPresenceTracking.entries()) {
     if (wasPresent && !currentlyPresentUsers.has(serializedId)) {
-      // Don't log "left" if user is currently peeking
-      if (currentlyPeekingUsers.has(serializedId)) {
-        continue;
-      }
-
       userPresenceTracking.delete(serializedId);
 
-      if (presenceLoggingEnabled || halfSwipeNotificationEnabled) {
+      if (presenceLoggingEnabled) {
         const parts = serializedId.split(':');
         if (parts[0] && parts[1]) {
           const userId = parts[0];
@@ -284,24 +237,8 @@ async function handleOnActiveConversationInfoUpdated(activeConversationInfo: any
           if (presenceLoggingEnabled) {
             logPresenceEvent(user, PresenceState.LEFT, conversationTitle);
           }
-
-          if (halfSwipeNotificationEnabled) {
-            sendPresenceNotification({
-              user,
-              conversation,
-              conversationId,
-              presenceState: PresenceState.LEFT,
-            });
-          }
         }
       }
-    }
-  }
-
-  // Clean up peeking state for users who stopped peeking
-  for (const [serializedId, state] of userPresenceMap.entries()) {
-    if (state === PresenceState.PEEKING && !currentlyPeekingUsers.has(serializedId)) {
-      userPresenceMap.delete(serializedId);
     }
   }
 
@@ -318,7 +255,6 @@ class PresenceLogging extends Module {
     super('Presence Logging');
     store.subscribe((storeState: any) => storeState.presence, this.load);
     settings.on('PRESENCE_LOGGING.setting:update', () => this.load());
-    settings.on('HALF_SWIPE_NOTIFICATION.setting:update', () => this.load());
     settings.on('PRESENCE_LOGGING_TYPES.setting:update', () => this.load());
     settings.on('PRESENCE_LOGGING_SHOW_TIMESTAMP.setting:update', () => this.load());
   }
@@ -329,9 +265,7 @@ class PresenceLogging extends Module {
       return;
     }
 
-    const halfSwipeNotificationEnabled = settings.getSetting('HALF_SWIPE_NOTIFICATION');
-    const presenceLoggingEnabled = settings.getSetting('PRESENCE_LOGGING');
-    const enabled = halfSwipeNotificationEnabled || presenceLoggingEnabled;
+    const enabled = settings.getSetting('PRESENCE_LOGGING');
     const changedValues: any = {};
 
     if (enabled && presenceClient.onActiveConversationInfoUpdated !== newOnActiveConversationInfoUpdated) {

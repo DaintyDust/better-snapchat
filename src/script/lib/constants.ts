@@ -15,7 +15,6 @@ export const SettingIds = {
   NTFY_TOPIC: 'NTFY_TOPIC',
   NTFY_IGNORED_NAMES: 'NTFY_IGNORED_NAMES',
   STORED_CONVERSATIONS_NAMES: 'STORED_CONVERSATIONS_NAMES',
-  PEEKING_INDICATOR: 'PEEKING_INDICATOR',
   /**
    * @deprecated Use {@link SettingIds.BITMOJI_PRESENCE} instead.
    */
@@ -37,7 +36,6 @@ export const SettingIds = {
   ALLOW_CROSS_TAB: 'ALLOW_CROSS_TAB',
   PREVENT_STORY_READ_RECEIPTS: 'PREVENT_STORY_READ_RECEIPTS',
   PREVENT_CONVERSATION_READ_RECEIPTS: 'PREVENT_CONVERSATION_READ_RECEIPTS',
-  HALF_SWIPE_NOTIFICATION: 'HALF_SWIPE_NOTIFICATION',
   OPEN_CHAT_NOTIFICATION: 'OPEN_CHAT_NOTIFICATION',
   CHAT_HANDLING: 'CHAT_HANDLING',
   PRESENCE_LOGGING: 'PRESENCE_LOGGING',
@@ -85,7 +83,6 @@ export const defaultSettingValues = {
     users: [],
     totalChats: 0,
   }),
-  [SettingIds.PEEKING_INDICATOR]: false,
   [SettingIds.HIDE_BITMOJI]: false,
   [SettingIds.MOBILE_BITMOJI]: false,
   [SettingIds.AUTO_SAVE_CHATS]: false,
@@ -95,13 +92,12 @@ export const defaultSettingValues = {
   [SettingIds.ALLOW_CROSS_TAB]: true,
   [SettingIds.PREVENT_STORY_READ_RECEIPTS]: false,
   [SettingIds.PREVENT_CONVERSATION_READ_RECEIPTS]: false,
-  [SettingIds.HALF_SWIPE_NOTIFICATION]: false,
   [SettingIds.SNAP_PEEKING]: false,
   [SettingIds.OPEN_CHAT_NOTIFICATION]: false,
   [SettingIds.BITMOJI_PRESENCE]: BitmojiPresence.DEFAULT,
   [SettingIds.CHAT_HANDLING]: ChatHandling.DEFAULT,
   [SettingIds.PRESENCE_LOGGING]: false,
-  [SettingIds.PRESENCE_LOGGING_TYPES]: JSON.stringify(['TYPING', 'IDLE', 'PEEKING', 'JOINED', 'LEFT']),
+  [SettingIds.PRESENCE_LOGGING_TYPES]: JSON.stringify(['TYPING', 'IDLE', 'JOINED', 'LEFT']),
   [SettingIds.PRESENCE_LOGGING_SHOW_TIMESTAMP]: true,
   [SettingIds.PRESENCE_INDICATOR]: true,
   [SettingIds.SETTINGS_BUTTON_LAYOUT]: SettingsButtonLayout.RIGHT,
@@ -127,7 +123,6 @@ export const ExternalUrls = {
 export enum PresenceState {
   TYPING = 'TYPING',
   IDLE = 'IDLE',
-  PEEKING = 'PEEKING',
   JOINED = 'JOINED',
   LEFT = 'LEFT',
 }
@@ -135,7 +130,6 @@ export enum PresenceState {
 export const PresenceActionMap = {
   [PresenceState.TYPING]: (conversationTitle: string) => `Typing in ${conversationTitle}`,
   [PresenceState.IDLE]: (conversationTitle: string) => `Idle in ${conversationTitle}`,
-  [PresenceState.PEEKING]: (conversationTitle: string) => `Peeked at ${conversationTitle}`,
   [PresenceState.JOINED]: (conversationTitle: string) => `Joined ${conversationTitle}`,
   [PresenceState.LEFT]: (conversationTitle: string) => `Left ${conversationTitle}`,
 };

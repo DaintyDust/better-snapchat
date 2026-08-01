@@ -9,7 +9,6 @@ const DESCRIPTION = 'Log presence changes to the dev-console.';
 const PRESENCE_TYPE_LABELS: Record<PresenceState, string> = {
   [PresenceState.TYPING]: 'Typing',
   [PresenceState.IDLE]: 'Idle',
-  [PresenceState.PEEKING]: 'Peeking',
   [PresenceState.JOINED]: 'Joined',
   [PresenceState.LEFT]: 'Left',
 };
