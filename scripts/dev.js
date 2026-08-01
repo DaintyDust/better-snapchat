@@ -48,6 +48,7 @@ const manifest = {
 };
 
 async function buildExtension() {
+  await fs.rm('./public/build', { recursive: true, force: true });
   await Promise.all([
     ESBuild.build({
       entryPoints: ['./src/script', './src/hot-reload', './src/messenger'],

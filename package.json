@@ -3,19 +3,19 @@
   "version": "1.5.3",
   "description": "Screenshot Freely, Save Media, Bypass Presence Detection and more!",
   "scripts": {
-    "start": "rm -rf ./public/build/ && node ./scripts/dev.js",
+    "start": "node ./scripts/dev.js",
     "build": "npm run build:chrome",
     "manifest-lint": "addons-linter public/",
     "lint": "eslint && prettier --check \"src/**/*.{ts,tsx}\"",
     "lint:fix": "prettier --write --end-of-line auto \"src/**/*.{ts,tsx}\"",
-    "build:chrome": "rm -rf ./public/build/ && node ./scripts/chrome.js",
-    "build:firefox": "rm -rf ./public/build/ && node ./scripts/firefox.js",
-    "build:userscript": "rm -rf ./public/build/ && node ./scripts/userscript.js",
+    "build:chrome": "node ./scripts/chrome.js",
+    "build:firefox": "node ./scripts/firefox.js",
+    "build:userscript": "node ./scripts/userscript.js",
     "package": "npm run package:chrome",
-    "package:chrome": "bash -lc \"rm -rf ./public/build/ && npm run build:chrome && mkdir -p ./dist && ./node_modules/.bin/cross-zip ./public ./dist/better-snapchat-chrome-v${npm_package_version}.zip\"",
-    "package:firefox": "bash -lc \"rm -rf ./public/build/ && npm run build:firefox && mkdir -p ./dist && ./node_modules/.bin/cross-zip ./public ./dist/better-snapchat-firefox-v${npm_package_version}.zip\"",
-    "package:userscript": "bash -lc \"rm -rf ./public/build/ && npm run build:userscript && mkdir -p ./dist && cp ./public/build/userscript.js ./dist/better-snapchat-userscript-v${npm_package_version}.js\"",
-    "package:all": "npm run package:chrome && npm run package:firefox && npm run package:userscript"
+    "package:chrome": "node ./scripts/package.js chrome",
+    "package:firefox": "node ./scripts/package.js firefox",
+    "package:userscript": "node ./scripts/package.js userscript",
+    "package:all": "node ./scripts/package.js all"
   },
   "repository": {
     "type": "git",

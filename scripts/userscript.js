@@ -32,6 +32,8 @@ GM_addElement('script', {
 (async () => {
   console.log('Building: User Script');
 
+  await fs.rm('./public/build', { recursive: true, force: true });
+
   await ESBuild.build({
     entryPoints: ['./src/script'],
     bundle: true,

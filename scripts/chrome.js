@@ -10,6 +10,8 @@ const { transform } = require('lightningcss');
 (async () => {
   console.log('Building: Chrome Extension');
 
+  await fs.rm('./public/build', { recursive: true, force: true });
+
   await ESBuild.build({
     entryPoints: ['./src/script', './src/background', './src/messenger'],
     bundle: true,
