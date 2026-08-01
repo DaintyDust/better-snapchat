@@ -35,7 +35,10 @@ const { transform } = require('lightningcss');
         },
       }),
     ],
-    define: { 'process.env.VERSION': JSON.stringify(package.version) },
+    define: {
+      'process.env.VERSION': JSON.stringify(package.version),
+      'process.env.IS_DEV': 'false',
+    },
   });
 
   const manifest = {

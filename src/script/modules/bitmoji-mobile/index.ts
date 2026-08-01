@@ -25,7 +25,7 @@ class BitmojiMobile extends Module {
 
   load() {
     const flag = settings.getSetting('BITMOJI_PRESENCE');
-    const enabled = flag === BitmojiPresence.MOBILE;
+    const enabled = flag === BitmojiPresence.MOBILE || flag === BitmojiPresence.HIDE;
 
     if (enabled && oldUint8ArraySlice == null) {
       oldUint8ArraySlice = Uint8Array.prototype.slice;

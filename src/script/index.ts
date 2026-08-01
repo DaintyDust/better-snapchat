@@ -21,10 +21,25 @@ import { logInfo, logWarn } from './lib/debug';
     logWarn('BetterSnap did not inject immediately, page was already loaded.');
     // @ts-ignore glob import
     import('./modules/**/index.ts');
+    if (process.env.IS_DEV) {
+      // @ts-ignore glob import
+      import('./devmodules/**/index.ts');
+    }
   } else {
     // @ts-ignore glob import
     import('./patches/*.ts');
     // @ts-ignore glob import
-    document.addEventListener('DOMContentLoaded', () => import('./modules/**/index.ts'), { once: true });
+    document.addEventListener(
+      'DOMContentLoaded',
+      () => {
+        // @ts-ignore glob import
+        import('./modules/**/index.ts');
+        if (process.env.IS_DEV) {
+          // @ts-ignore glob import
+          import('./devmodules/**/index.ts');
+        }
+      },
+      { once: true },
+    );
   }
 })();

@@ -21,5 +21,7 @@ declare module '*.css' {
 declare const process: {
   env: {
     VERSION?: string;
+    HMR_PORT?: string;
+    IS_DEV?: boolean;
   };
 };

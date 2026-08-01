@@ -57,7 +57,10 @@ GM_addElement('script', {
         },
       }),
     ],
-    define: { 'process.env.VERSION': JSON.stringify(package.version) },
+    define: {
+      'process.env.VERSION': JSON.stringify(package.version),
+      'process.env.IS_DEV': 'false',
+    },
   });
 
   const scriptTextContent = await fs.readFile(`./public/build/script.js`, 'utf-8');

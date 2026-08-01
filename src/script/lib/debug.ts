@@ -52,3 +52,14 @@ export function logError(...args: unknown[]) {
     ...args,
   );
 }
+
+export function logDebug(...args: unknown[]) {
+  const { console } = getIframeContentWindow();
+  console.log(
+    `%c DEBUG %c %c Better-Snap `,
+    `background: ${LEVEL_COLORS['debug']}; color: black; font-weight: bold; border-radius: 5px;`,
+    '',
+    `background: #3b5bdb; color: white; font-weight: bold; border-radius: 5px;`,
+    ...args,
+  );
+}
