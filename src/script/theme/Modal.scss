@@ -17,27 +17,112 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.modalMainContainer {
+  display: flex;
+  gap: 20px;
+  height: 380px;
+}
+
+.categorySidebar {
+  width: 170px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.categoryButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--mantine-radius-md, 8px);
+  background: transparent;
+  color: var(--mantine-color-dimmed);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: var(--mantine-color-dark-6);
+    color: var(--mantine-color-text);
+  }
+
+  &.active {
+    background-color: var(--mantine-color-dark-5);
+    color: var(--mantine-color-white);
+
+    .categoryIcon {
+      color: var(--mantine-color-blue-4);
+    }
+  }
+}
+
+.categoryIcon {
+  color: var(--mantine-color-dimmed);
+  transition: color 0.15s ease;
+}
+
+.settingsContentArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  height: 100%;
+}
+
+.settingsContentHeader {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--mantine-color-dark-4);
+  flex-shrink: 0;
+}
+
 .modalSettings {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 380px;
-  overflow-y: scroll;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
 .modalSettings::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
   background: unset;
   border: unset;
 }
 
 .modalSettings::-webkit-scrollbar-thumb {
-  background-color: rgba(134, 142, 150, 0.15); //var(--mantine-color-gray-light);
+  background-color: var(--mantine-color-dark-4);
   border-radius: 8px;
 }
 
 .modalSettings::-webkit-scrollbar-button {
   display: none;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.modalHeaderLeft {
+  width: 170px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.modalHeaderRight {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
 }
 
 .modalSection {
@@ -51,7 +136,7 @@
 }
 
 .searchInput {
-  height: 20px;
+  width: 70%;
 }
 
 .modalBody {
@@ -70,7 +155,45 @@
 }
 
 .logo {
-  padding: 0px;
+  padding: 0 9px;
+  width: 36px;
+  min-width: 36px;
+  justify-content: flex-start;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.15s ease;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  .donateText {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    transition:
+      max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.2s ease,
+      margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 0;
+    pointer-events: none;
+  }
+
+  &:hover {
+    width: 100px;
+
+    .donateText {
+      max-width: 60px;
+      opacity: 1;
+      margin-left: 10px;
+    }
+  }
 }
 
 .footerText {
@@ -91,6 +214,4 @@
   margin: 0;
   text-align: left;
   width: fit-content;
-  align-self: flex-end;
-  margin-right: 20px;
 }

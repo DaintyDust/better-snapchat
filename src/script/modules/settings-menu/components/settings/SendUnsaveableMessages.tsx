@@ -13,5 +13,6 @@ function UnsaveableSnaps() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Messages',
   component: UnsaveableSnaps,
 };

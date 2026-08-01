@@ -13,5 +13,6 @@ function CrossTab() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Advanced',
   component: CrossTab,
 };

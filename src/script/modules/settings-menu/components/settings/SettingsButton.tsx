@@ -26,5 +26,6 @@ function _SettingsButtonLayout() {
 export default {
   name: [NAME, DEFAULT_NAME, HIDDEN_NAME],
   description: [DEFAULT_DESCRIPTION, HIDDEN_DESCRIPTION],
+  category: 'Advanced',
   component: _SettingsButtonLayout,
 };

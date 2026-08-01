@@ -13,5 +13,6 @@ function UploadImageSnaps() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Media',
   component: UploadImageSnaps,
 };

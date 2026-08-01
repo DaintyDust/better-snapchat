@@ -10,5 +10,6 @@ public/manifest.json
 .DS_Store
 *.backup*
 *_New*
+*.disabled
 
 /src/script/modules/disabled

@@ -13,5 +13,6 @@ function SnapPeeking() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Privacy',
   component: SnapPeeking,
 };

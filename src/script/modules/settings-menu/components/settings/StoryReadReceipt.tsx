@@ -13,5 +13,6 @@ function StoryReadReceipts() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Privacy',
   component: StoryReadReceipts,
 };

@@ -14,7 +14,7 @@ dotenv.config();
 
 const manifest = {
   manifest_version: 3,
-  name: package.name,
+  name: `${package.name} (Dev)`,
   description: package.description,
   version: package.version,
   icons: {

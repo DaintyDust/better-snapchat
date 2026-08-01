@@ -13,5 +13,6 @@ function ViewPrivateStories() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Messages',
   component: ViewPrivateStories,
 };

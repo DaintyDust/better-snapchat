@@ -71,10 +71,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   });
 
   async function reloadTabs() {
-    const tabs = await Promise.all([
-      chrome.tabs.query({ url: 'https://web.snapchat.com/*' }),
-      chrome.tabs.query({ url: 'https://www.snapchat.com/web/*' }),
-    ]);
+    const tabs = await Promise.all([chrome.tabs.query({ url: 'https://web.snapchat.com/*' }), chrome.tabs.query({ url: 'https://www.snapchat.com/web/*' })]);
 
     for (const { id: tabId } of tabs.flat()) {
       if (tabId == null) {

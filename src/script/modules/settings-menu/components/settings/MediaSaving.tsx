@@ -13,5 +13,6 @@ function MediaSaving() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Media',
   component: MediaSaving,
 };

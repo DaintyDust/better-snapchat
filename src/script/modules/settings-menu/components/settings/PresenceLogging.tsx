@@ -69,5 +69,6 @@ function PresenceLogging() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Advanced',
   component: PresenceLogging,
 };

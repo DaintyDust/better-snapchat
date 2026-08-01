@@ -13,5 +13,6 @@ function TypingNotifcation() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Notifications',
   component: TypingNotifcation,
 };

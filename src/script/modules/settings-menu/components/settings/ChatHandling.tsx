@@ -29,5 +29,6 @@ function ChatHandling_() {
 export default {
   name: [NAME, DEFAULT_NAME, AUTO_SAVE_NAME, NO_READ_RECEIPTS_NAME],
   description: [DEFAULT_DESCRIPTION, AUTO_SAVE_DESCRIPTION, NO_READ_RECEIPTS_DESCRIPTION],
+  category: 'Messages',
   component: ChatHandling_,
 };

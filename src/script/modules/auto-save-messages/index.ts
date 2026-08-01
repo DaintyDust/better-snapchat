@@ -41,10 +41,7 @@ class AutoSaveMessages extends Module {
     if (enabled && unsubscribe == null) {
       this.saveActiveConversationMessages();
 
-      unsubscribe = store.subscribe(
-        (storeState: any) => storeState.messaging.conversations,
-        this.saveActiveConversationMessages.bind(this),
-      );
+      unsubscribe = store.subscribe((storeState: any) => storeState.messaging.conversations, this.saveActiveConversationMessages.bind(this));
     }
   }
 
@@ -54,9 +51,7 @@ class AutoSaveMessages extends Module {
       return;
     }
 
-    const activeConversation = Object.entries(conversations).find(
-      ([, conversation]: [string, any]) => conversation.isActive,
-    );
+    const activeConversation = Object.entries(conversations).find(([, conversation]: [string, any]) => conversation.isActive);
 
     if (activeConversation == null) {
       return;

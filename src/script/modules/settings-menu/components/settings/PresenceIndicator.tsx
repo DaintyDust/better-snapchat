@@ -14,5 +14,6 @@ function PresenceIndicator() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Presence',
   component: PresenceIndicator,
 };

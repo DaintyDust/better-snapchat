@@ -13,5 +13,6 @@ function DisableReadReceipts() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Privacy',
   component: DisableReadReceipts,
 };

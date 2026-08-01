@@ -17,11 +17,7 @@ const MOBILE_DESCRIPTION = 'Appear as if you are on mobile.';
 function BitmojiSettings() {
   const [bitmojiPresence, setBitmojiPresence] = useSettingState('BITMOJI_PRESENCE');
   return (
-    <Radio.Group
-      label={NAME}
-      value={bitmojiPresence}
-      onChange={(value) => setBitmojiPresence(value as BitmojiPresence)}
-    >
+    <Radio.Group label={NAME} value={bitmojiPresence} onChange={(value) => setBitmojiPresence(value as BitmojiPresence)}>
       <Stack>
         <Radio value={BitmojiPresence.DEFAULT} label={DEFAULT_NAME} description={DEFAULT_DESCRIPTION} />
         <Radio value={BitmojiPresence.MOBILE} label={MOBILE_NAME} description={MOBILE_DESCRIPTION} />
@@ -34,5 +30,6 @@ function BitmojiSettings() {
 export default {
   name: [NAME, DEFAULT_NAME, HIDE_NAME],
   description: [DEFAULT_DESCRIPTION, HIDE_DESCRIPTION],
+  category: 'Presence',
   component: BitmojiSettings,
 };

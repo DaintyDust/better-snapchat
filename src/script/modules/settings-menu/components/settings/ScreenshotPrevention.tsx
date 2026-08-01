@@ -2,7 +2,7 @@ import React from 'react';
 import useSettingState from '@hooks/useSettingState';
 import { Switch } from '@mantine/core';
 
-const NAME = 'Screenshots';
+const NAME = 'Screenshot Detection Bypass';
 const DESCRIPTION = "Bypass Snapchat's screenshot detection.";
 
 function AllowScreenshot() {
@@ -13,5 +13,6 @@ function AllowScreenshot() {
 export default {
   name: NAME,
   description: DESCRIPTION,
+  category: 'Privacy',
   component: AllowScreenshot,
 };
